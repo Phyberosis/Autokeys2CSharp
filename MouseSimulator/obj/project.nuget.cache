@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "iB+va9dB017aPlGgLkbwRL5G0DKLEmYl60gMc4312c95/NpXFM/CQz/oo1srgRSrNmxo9VKwaBgPIjYGUu4qJA==",
+  "success": true,
+  "projectFilePath": "C:\\workspace\\CSharp\\Autokeys2\\MouseSimulator\\MouseSimulator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

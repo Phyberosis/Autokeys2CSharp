@@ -1,0 +1,9 @@
+C:\workspace\CSharp\Autokeys2\MouseSimulator\bin\Debug\netstandard2.0\MouseSimulator.deps.json
+C:\workspace\CSharp\Autokeys2\MouseSimulator\bin\Debug\netstandard2.0\MouseSimulator.dll
+C:\workspace\CSharp\Autokeys2\MouseSimulator\bin\Debug\netstandard2.0\MouseSimulator.pdb
+C:\workspace\CSharp\Autokeys2\MouseSimulator\obj\Debug\netstandard2.0\MouseSimulator.AssemblyInfoInputs.cache
+C:\workspace\CSharp\Autokeys2\MouseSimulator\obj\Debug\netstandard2.0\MouseSimulator.AssemblyInfo.cs
+C:\workspace\CSharp\Autokeys2\MouseSimulator\obj\Debug\netstandard2.0\MouseSimulator.csproj.CoreCompileInputs.cache
+C:\workspace\CSharp\Autokeys2\MouseSimulator\obj\Debug\netstandard2.0\MouseSimulator.dll
+C:\workspace\CSharp\Autokeys2\MouseSimulator\obj\Debug\netstandard2.0\MouseSimulator.pdb
+C:\workspace\CSharp\Autokeys2\MouseSimulator\obj\Debug\netstandard2.0\MouseSimulator.csprojAssemblyReference.cache
