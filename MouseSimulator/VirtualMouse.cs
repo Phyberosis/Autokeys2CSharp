@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace MouseSimulator
@@ -24,7 +25,7 @@ namespace MouseSimulator
 
         public void Move(Point p)
         {
-            Move(p.x, p.y);
+            Move(p.X, p.Y);
         }
 
         public void LClick(int x, int y)

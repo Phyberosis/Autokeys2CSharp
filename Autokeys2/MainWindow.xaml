@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Autokeys2"
         mc:Ignorable="d"
-        Title="Autokeys 2" Height="360" Width="200" WindowStyle="None" AllowsTransparency="True" Background="#00000000" ResizeMode="NoResize" MouseDown="onMouseDown">
+        Title="Autokeys 2" Height="360" Width="200" WindowStyle="None" AllowsTransparency="True" Background="#00000000" ResizeMode="NoResize" MouseDown="onMouseDown" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="mainGrid" TargetType="Grid">
             <Setter Property="Background" Value="#00B2B0B0"/>

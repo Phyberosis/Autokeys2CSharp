@@ -5,15 +5,15 @@ VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autokeys2", "Autokeys2\Autokeys2.csproj", "{9FC78855-A064-4A6B-8E1A-C16D6F2B94DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenInput", "ScreenInput\ScreenInput.csproj", "{A6422C35-9F5F-4CA9-A2A7-AD858CC60C0A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{7B1A4B08-05E1-4EED-A7A9-26C0011603AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputHook", "InputHook\InputHook.csproj", "{1E64456D-1A2C-48D4-8E3F-BC1FD6A36E52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHook", "InputHook\InputHook.csproj", "{1E64456D-1A2C-48D4-8E3F-BC1FD6A36E52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsInput", "external\WindowsInput\WindowsInput.csproj", "{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MouseSimulator", "MouseSimulator\MouseSimulator.csproj", "{5A4C95CB-1D07-4853-9B56-BF4A5DCA4D2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MouseSimulator", "MouseSimulator\MouseSimulator.csproj", "{5A4C95CB-1D07-4853-9B56-BF4A5DCA4D2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{CBFE44B4-CFD8-4698-89C6-06D1FAECDA58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,6 @@ Global
 		{9FC78855-A064-4A6B-8E1A-C16D6F2B94DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FC78855-A064-4A6B-8E1A-C16D6F2B94DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FC78855-A064-4A6B-8E1A-C16D6F2B94DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6422C35-9F5F-4CA9-A2A7-AD858CC60C0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6422C35-9F5F-4CA9-A2A7-AD858CC60C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6422C35-9F5F-4CA9-A2A7-AD858CC60C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6422C35-9F5F-4CA9-A2A7-AD858CC60C0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B1A4B08-05E1-4EED-A7A9-26C0011603AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B1A4B08-05E1-4EED-A7A9-26C0011603AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B1A4B08-05E1-4EED-A7A9-26C0011603AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +41,10 @@ Global
 		{5A4C95CB-1D07-4853-9B56-BF4A5DCA4D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A4C95CB-1D07-4853-9B56-BF4A5DCA4D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A4C95CB-1D07-4853-9B56-BF4A5DCA4D2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBFE44B4-CFD8-4698-89C6-06D1FAECDA58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBFE44B4-CFD8-4698-89C6-06D1FAECDA58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBFE44B4-CFD8-4698-89C6-06D1FAECDA58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBFE44B4-CFD8-4698-89C6-06D1FAECDA58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

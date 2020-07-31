@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,32 +18,27 @@ namespace InputHook
         WM_RBUTTONUP = 0x0205
     }
 
-    //public enum KeyAction
-    //{
-    //    WM_KEYDOWN = 0x0100,
-    //    WM_KEYUP = 0x0101
-    //}
-
     public class Hook
     {
         private delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
+        private const int WM_SYSKEYDOWN = 0x0104;
         private const int WM_KEYUP = 0x0101;
 
         // keyboard
         private LowLevelProc _kproc;
         private static IntPtr _khookID = IntPtr.Zero;
         public delegate void OnKeyDelegate(Keys k);
-        private OnKeyDelegate onKeyUp;
-        private OnKeyDelegate onKeyDn;
+        private LinkedList<OnKeyDelegate> onKeyUp;
+        private LinkedList<OnKeyDelegate> onKeyDn;
 
         // mouse
         private LowLevelProc _mproc;
         private static IntPtr _mhookID = IntPtr.Zero;
         public delegate void OnMouseDelegate(MouseAction a, int x, int y);
-        private OnMouseDelegate onMouse;
+        private LinkedList<OnMouseDelegate> onMouse;
 
 
         // singleton
@@ -61,24 +55,61 @@ namespace InputHook
         {
             _kproc = kHookReception;
             _mproc = mHookReception;
-        }
 
-        public void SetKeyHook(OnKeyDelegate onDown, OnKeyDelegate onUp)
-        {
             _khookID = setkHook(_kproc);
-
-            onKeyDn = onDown;
-            onKeyUp = onUp;
-        }
-
-        public void SetMouseHook(OnMouseDelegate onMouse)
-        {
             _mhookID = SetmHook(_mproc);
 
-            this.onMouse = onMouse;
+            onKeyUp = new LinkedList<OnKeyDelegate>();
+            onKeyDn = new LinkedList<OnKeyDelegate>();
+            onMouse = new LinkedList<OnMouseDelegate>();
         }
 
-        public void Unhook()
+        public void AddKeyHook(OnKeyDelegate onDown, OnKeyDelegate onUp)
+        {
+            Task.Delay(0).ContinueWith((t) => {
+                lock (this)
+                {
+                    onKeyDn.AddLast(onDown);
+                    onKeyUp.AddLast(onUp);
+                }
+            });
+        }
+
+        public void RemoveKeyHook(OnKeyDelegate onDown, OnKeyDelegate onUp)
+        {
+            Task.Delay(0).ContinueWith((t) => {
+                lock (this)
+                {
+                    onKeyDn.Remove(onDown);
+                    onKeyUp.Remove(onUp);
+                }
+            });
+        }
+
+        public void AddMouseHook(OnMouseDelegate onMouse)
+        {
+            Task.Delay(0).ContinueWith((t) =>
+            {
+                lock (this)
+                    this.onMouse.AddLast(onMouse);
+            });
+        }
+
+        public void RemoveMouseHook(OnMouseDelegate onMouse)
+        {
+            Task.Delay(0).ContinueWith((t) =>
+            {
+                lock (this)
+                    this.onMouse.Remove(onMouse);
+            });
+        }
+
+        public static void Dispose()
+        {
+            inst?.dispose();
+        }
+
+        private void dispose()
         {
             UnhookWindowsHookEx(_khookID);
             UnhookWindowsHookEx(_mhookID);
@@ -95,21 +126,32 @@ namespace InputHook
             }
         }
 
-        private IntPtr kHookReception(
-            int nCode, IntPtr wParam, IntPtr lParam)
+        private IntPtr kHookReception(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            Task.Delay(0).ContinueWith((t) =>
             {
-                int vkCode = Marshal.ReadInt32(lParam);
-                onKeyDn((Keys)vkCode);
-                //Console.WriteLine((Keys)vkCode);
-                //MessageBox.Show(((Keys)vkCode).ToString());
-            }
-            else if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
-            {
-                int vkCode = Marshal.ReadInt32(lParam);
-                onKeyUp((Keys)vkCode);
-            }
+                lock (this)
+                {
+                    if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN)
+                    {
+                        int vkCode = Marshal.ReadInt32(lParam);
+                        foreach (var fn in onKeyDn)
+                        {
+                            fn((Keys)vkCode);
+                        }
+                        //Console.WriteLine((Keys)vkCode);
+                        //MessageBox.Show(((Keys)vkCode).ToString());
+                    }
+                    else if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
+                    {
+                        int vkCode = Marshal.ReadInt32(lParam);
+                        foreach (var fn in onKeyUp)
+                        {
+                            fn((Keys)vkCode);
+                        }
+                    }
+                }
+            });
             return CallNextHookEx(_khookID, nCode, wParam, lParam);
         }
 
@@ -156,16 +198,24 @@ namespace InputHook
             }
         }
 
-        private IntPtr mHookReception(
-            int nCode, IntPtr wParam, IntPtr lParam)
+        private IntPtr mHookReception(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0)
-            //&& MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
+            Task.Delay(0).ContinueWith((t) =>
             {
-                MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-                onMouse((MouseAction)wParam, hookStruct.pt.x, hookStruct.pt.y);
-                //Console.WriteLine(hookStruct.pt.x + ", " + hookStruct.pt.y);
-            }
+                lock (this)
+                {
+                    if (nCode >= 0)
+                    //&& MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
+                    {
+                        MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                        foreach (var fn in onMouse)
+                        {
+                            fn((MouseAction)wParam, hookStruct.pt.x, hookStruct.pt.y);
+                        }
+                        //Console.WriteLine(hookStruct.pt.x + ", " + hookStruct.pt.y);
+                    }
+                }
+            });
             return CallNextHookEx(_mhookID, nCode, wParam, lParam);
         }
     }

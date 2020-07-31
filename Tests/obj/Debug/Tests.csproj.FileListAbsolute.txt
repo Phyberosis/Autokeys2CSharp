@@ -19,3 +19,6 @@ C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\WindowsInput.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\WindowsInput.pdb
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\WindowsInput.xml
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\MouseSimulator.pdb
+C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Data.dll
+C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\System.Numerics.Vectors.dll
+C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Data.pdb

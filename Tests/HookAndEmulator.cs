@@ -36,7 +36,7 @@ namespace Tests
             const int y = 456;
 
             bool down = false, up = false;
-            Hook.I().SetMouseHook((MouseAction a, int mx, int my) =>
+            Hook.I().AddMouseHook((MouseAction a, int mx, int my) =>
             {
                 if (a == MouseAction.WM_LBUTTONDOWN)
                     down = mx == x && my == y;
@@ -46,9 +46,9 @@ namespace Tests
                 Console.WriteLine("{0} at {1}, {2}", a.ToString(), mx, my);
             });
 
-            Thread.Sleep(w);
+            Thread.Sleep(w * 3);
             m.LClick(x, y);
-            Thread.Sleep(w);
+            Thread.Sleep(w * 3);
             Assert.IsTrue(up && down);
         }
 
@@ -56,7 +56,7 @@ namespace Tests
         public void KeyX()
         {
             bool down = false, up = false;
-            Hook.I().SetKeyHook((Keys k) =>
+            Hook.I().AddKeyHook((Keys k) =>
             {
                 if(k == Keys.X)
                 {
@@ -83,7 +83,7 @@ namespace Tests
         public void KeyShift()
         {
             bool down = false, up = false;
-            Hook.I().SetKeyHook((Keys k) =>
+            Hook.I().AddKeyHook((Keys k) =>
             {
                 if (k.ToString().Contains("Shift"))
                 {
@@ -112,7 +112,7 @@ namespace Tests
         public void keyCmdM()
         {
             bool ctrl = false, m = false;
-            Hook.I().SetKeyHook((Keys k) =>
+            Hook.I().AddKeyHook((Keys k) =>
             {
                 if (k == Keys.M)
                 {
@@ -135,7 +135,7 @@ namespace Tests
         [TestCleanup]
         public void cleanup()
         {
-            Hook.I().Unhook();
+            Hook.Dispose();
         }
     }
 }
