@@ -1,0 +1,6 @@
+﻿WPF:
+	resources all in one level at app.xaml?
+	https://michaelscodingspot.com/wpf-merged-dictionary-problemsandsolutions/
+
+	treeview
+	https://www.codeproject.com/Articles/26288/Simplifying-the-WPF-TreeView-by-Using-the-ViewMode

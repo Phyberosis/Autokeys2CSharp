@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -66,7 +65,8 @@ namespace InputHook
 
         public void AddKeyHook(OnKeyDelegate onDown, OnKeyDelegate onUp)
         {
-            Task.Delay(0).ContinueWith((t) => {
+            Task.Delay(0).ContinueWith((t) =>
+            {
                 lock (this)
                 {
                     onKeyDn.AddLast(onDown);
@@ -198,6 +198,7 @@ namespace InputHook
             }
         }
 
+        private int lx = 0, ly = 0;
         private IntPtr mHookReception(int nCode, IntPtr wParam, IntPtr lParam)
         {
             Task.Delay(0).ContinueWith((t) =>
@@ -208,6 +209,14 @@ namespace InputHook
                     //&& MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
                     {
                         MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                        int x = hookStruct.pt.x, y = hookStruct.pt.y;
+                        MouseAction ma = (MouseAction)wParam;
+
+                        const int MAXRANGE = 25; // sometimes mouse move reports 0, 0
+                        if (x == 0 && y == 0 && Math.Abs(lx - x) > MAXRANGE &&
+                            Math.Abs(ly - y) > MAXRANGE && ma == MouseAction.WM_MOUSEMOVE) return;
+                        lx = x; ly = y;
+
                         foreach (var fn in onMouse)
                         {
                             fn((MouseAction)wParam, hookStruct.pt.x, hookStruct.pt.y);

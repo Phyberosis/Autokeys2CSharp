@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Drawing;
 using Data;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tests
 {
@@ -18,6 +20,16 @@ namespace Tests
             //
             // TODO: Add constructor logic here
             //
+        }
+
+        [TestMethod]
+        public void TimeTests()
+        {
+            long startT = Time.Millis();
+            Thread.Sleep(100);
+            long delta = Time.Millis() - startT;
+            Assert.IsTrue(Math.Abs(delta - 100) < 5);
+            Console.WriteLine(delta);
         }
 
         [TestMethod]

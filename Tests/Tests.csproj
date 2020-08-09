@@ -73,10 +73,13 @@
       <Project>{1E64456D-1A2C-48D4-8E3F-BC1FD6A36E52}</Project>
       <Name>InputHook</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MouseSimulator\MouseSimulator.csproj">
-      <Project>{5A4C95CB-1D07-4853-9B56-BF4A5DCA4D2F}</Project>
-      <Name>MouseSimulator</Name>
+    <ProjectReference Include="..\OutputSimulator\OutputSimulator.csproj">
+      <Project>{fef1ccd4-9298-420f-b1f6-e9ee77c16fe5}</Project>
+      <Name>OutputSimulator</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Notes.txt" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

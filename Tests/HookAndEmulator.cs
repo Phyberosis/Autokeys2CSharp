@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MouseSimulator;
 using InputHook;
 using System.Threading;
 using System.Windows.Forms;
 using WindowsInput.Native;
 using WindowsInput;
+using OutputSimulator;
 
 namespace Tests
 {
@@ -47,7 +47,8 @@ namespace Tests
             });
 
             Thread.Sleep(w * 3);
-            m.LClick(x, y);
+            m.LDown(x, y);
+            m.LUp(x, y);
             Thread.Sleep(w * 3);
             Assert.IsTrue(up && down);
         }

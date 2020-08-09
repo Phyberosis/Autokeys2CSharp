@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\workspace\CSharp\Autokeys2\Autokeys2\App.xaml
-2219326408
+5-2137700238
 
-9102071919
-1291819711518
-MainWindow.xaml;Resources\GlassButton.xaml;
+12-1750799680
+131-783367043
+Resources\MainResources.xaml;Resources\MacrosTree.xaml;Views\MacrosView.xaml;MainWindow.xaml;Views\Trays\MacroItem.xaml;
 
-False
+True
 

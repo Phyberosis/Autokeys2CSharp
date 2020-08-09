@@ -1,5 +1,4 @@
 ﻿using InputHook;
-using MouseSimulator;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,6 +19,8 @@ namespace Autokeys2
         private Keys stop = Keys.Escape;
 
         public delegate void CallBack();
+        private Hook.OnKeyDelegate onRun = null;
+        private Hook.OnKeyDelegate onRunU = null;
 
         public void WaitForStopRec(CallBack callback)
         {
@@ -113,15 +114,23 @@ namespace Autokeys2
             return (maxD - minD) / maxD < 0.5 && (float)Math.Sqrt((ex * ex) + (ey * ey)) < maxD;
         }
 
-        public void WaitForRun(CallBack callBack)
-        {
-
-        }
-
         // todo map k to more readable
-        public void SetRun(Keys k)
+        public void SetRun(CallBack c, Keys k)
         {
+            if (onRun != null)
+            {
+                hook.RemoveKeyHook(onRun, onRunU);
+            }
+
+            onRun = (key) =>
+            {
+                if (key == k)
+                    c();
+            };
+            onRunU = (key) => { };
             run = k;
+
+            hook.AddKeyHook(onRun, onRunU);
         }
 
         public Keys GetRun() { return run; }

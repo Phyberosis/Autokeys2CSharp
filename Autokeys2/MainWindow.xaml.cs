@@ -1,20 +1,8 @@
 ﻿using InputHook;
+using Recordings;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Shell;
 
 namespace Autokeys2
@@ -24,7 +12,7 @@ namespace Autokeys2
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Recording rec;
+        private RecordingManager recManager;
         private bool isRecording = false;
 
         private InputHandler inputHandler;
@@ -32,14 +20,40 @@ namespace Autokeys2
         public MainWindow()
         {
             InitializeComponent();
-            rec = new Recording();
+            recManager = new RecordingManager();
             inputHandler = new InputHandler();
+
+            vewLeft.Visibility = Visibility.Collapsed;
+            //Task.Delay(0).ContinueWith((t) =>
+            //{
+            //    WindowsInput.IKeyboardSimulator ks = new WindowsInput.KeyboardSimulator(new WindowsInput.InputSimulator());
+
+            //    while(true)
+            //    {
+            //        ks.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_X);
+            //        Thread.Sleep(1000);
+            //    };
+            //});
         }
 
         private void onMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
+        }
+
+        private void showHideLeft(object sender, RoutedEventArgs e)
+        {
+            //if (vewLeft.IsVisible)
+            //{
+            //    vewLeft.Visibility = Visibility.Collapsed;
+            //    btnExL.Content = "<";
+            //}
+            //else
+            //{
+            //    vewLeft.Visibility = Visibility.Visible;
+            //    btnExL.Content = ">";
+            //}
         }
 
         private void btnRecord_Click(object sender, RoutedEventArgs e)
@@ -52,10 +66,10 @@ namespace Autokeys2
                 btnRecord.Visibility = Visibility.Hidden;
                 taskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
                 WindowState = WindowState.Minimized;
-                rec.Begin();
+                recManager.RecordBegin();
                 Action reset = () =>
                 {
-                    rec.End();
+                    recManager.RecordEnd();
                     taskbarInfo.ProgressState = TaskbarItemProgressState.None;
                     btnRecord.Visibility = Visibility.Visible;
                     isRecording = false;
@@ -72,7 +86,8 @@ namespace Autokeys2
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
-
+            recManager.Play();
+            WindowState = WindowState.Minimized;
         }
 
         private void btnMin_Click(object sender, RoutedEventArgs e)

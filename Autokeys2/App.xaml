@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:Autokeys2"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/MainResources.xaml"/>
+                <ResourceDictionary Source="/Resources/MacrosTree.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

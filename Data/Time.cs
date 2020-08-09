@@ -17,7 +17,11 @@ namespace Data
 
         public static long Micro()
         {
-            return (DateTime.Now.Ticks - FIRST) / 1000L;
+            return (DateTime.Now.Ticks - FIRST) / 10L;
+        }
+        public static long Millis()
+        {
+            return (DateTime.Now.Ticks - FIRST) / 10000L;
         }
     }
 }

@@ -74,8 +74,27 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="InputHandler.cs" />
-    <Compile Include="Recording.cs" />
+    <Compile Include="ViewModels\ITreeViewViewModel.cs" />
+    <Compile Include="ViewModels\TestViewModel.cs" />
+    <Compile Include="Views\MacrosView.xaml.cs">
+      <DependentUpon>MacrosView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Titlebar.cs" />
+    <Compile Include="Views\Trays\MacroItem.xaml.cs">
+      <DependentUpon>MacroItem.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Resources\MainResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\MacrosTree.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MacrosView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -88,7 +107,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Resources\GlassButton.xaml">
+    <Page Include="Views\Trays\MacroItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -128,13 +147,21 @@
       <Project>{cbfe44b4-cfd8-4698-89c6-06d1faecda58}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\external\WindowsInput\WindowsInput.csproj">
+      <Project>{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}</Project>
+      <Name>WindowsInput</Name>
+    </ProjectReference>
     <ProjectReference Include="..\InputHook\InputHook.csproj">
       <Project>{1e64456d-1a2c-48d4-8e3f-bc1fd6a36e52}</Project>
       <Name>InputHook</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MouseSimulator\MouseSimulator.csproj">
-      <Project>{5a4c95cb-1d07-4853-9b56-bf4a5dca4d2f}</Project>
-      <Name>MouseSimulator</Name>
+    <ProjectReference Include="..\OutputSimulator\OutputSimulator.csproj">
+      <Project>{fef1ccd4-9298-420f-b1f6-e9ee77c16fe5}</Project>
+      <Name>OutputSimulator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Recordings\Recordings.csproj">
+      <Project>{113e78e8-fc53-4336-929f-64e39c6c4d80}</Project>
+      <Name>Recordings</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
