@@ -23,7 +23,6 @@ namespace Autokeys2
             recManager = new RecordingManager();
             inputHandler = new InputHandler();
 
-            vewLeft.Visibility = Visibility.Collapsed;
             //Task.Delay(0).ContinueWith((t) =>
             //{
             //    WindowsInput.IKeyboardSimulator ks = new WindowsInput.KeyboardSimulator(new WindowsInput.InputSimulator());
@@ -44,16 +43,16 @@ namespace Autokeys2
 
         private void showHideLeft(object sender, RoutedEventArgs e)
         {
-            //if (vewLeft.IsVisible)
-            //{
-            //    vewLeft.Visibility = Visibility.Collapsed;
-            //    btnExL.Content = "<";
-            //}
-            //else
-            //{
-            //    vewLeft.Visibility = Visibility.Visible;
-            //    btnExL.Content = ">";
-            //}
+            if (vewLeft.IsVisible)
+            {
+                vewLeft.Visibility = Visibility.Collapsed;
+                btnExL.Content = "<";
+            }
+            else
+            {
+                vewLeft.Visibility = Visibility.Visible;
+                btnExL.Content = ">";
+            }
         }
 
         private void btnRecord_Click(object sender, RoutedEventArgs e)
