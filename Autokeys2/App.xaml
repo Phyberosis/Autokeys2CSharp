@@ -7,7 +7,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/MainResources.xaml"/>
-                <ResourceDictionary Source="/Resources/MacrosTree.xaml"/>
+                <ResourceDictionary Source="/Resources/MainStyles.xaml"/>
+                <ResourceDictionary Source="/Resources/MacrosTreeStyle.xaml"/>
+                <ResourceDictionary Source="/Resources/MacrosViewStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

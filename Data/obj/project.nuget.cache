@@ -1,12 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "N98R5mJE+1oiebSy4GiiXtODE+sxQgemoPcJUtPWOFDiV9eCYXE74mBLQGd4gWlR8g+FYOKfGR5kaZICleiobw==",
+  "dgSpecHash": "PMTF5wnt1C3XuCP2r3lkZS0GV6s/WVCPLSHzP9jZbnpFNksDGX1bpymhK+9XCoKpT9gjwbSNl/FCu1Cdii5mEQ==",
   "success": true,
   "projectFilePath": "C:\\workspace\\CSharp\\Autokeys2\\Data\\Data.csproj",
   "expectedPackageFiles": [
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+    "C:\\Users\\phybe\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\phybe\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
   ],
   "logs": []
 }

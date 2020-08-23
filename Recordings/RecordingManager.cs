@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Data;
 using InputHook;
 using OutputSimulator;
+using Events;
 
 namespace Recordings
 {
@@ -15,6 +16,7 @@ namespace Recordings
 
         private long startT;
         private Recording rec;
+        private EventHandle<Recording> recoringStopHandle;
         private Robot robot = new Robot();
 
         private enum State { IDLE, RECORDING, PLAYING }
@@ -48,6 +50,8 @@ namespace Recordings
             hook.AddKeyHook(onKeyDown, onKeyUp);
             hook.AddMouseHook(onMouse);
             currState.Set(State.IDLE);
+
+            recoringStopHandle = EventsBuiltin.RegisterEvent<Recording>(EventID.REC);
         }
 
         public void Play()
@@ -71,7 +75,7 @@ namespace Recordings
             rec = new Recording();
             startT = Time.Millis();
 
-            Func<int> GetTimestamp = () => { return (int)(Time.Millis() - startT); };
+            Func<long> GetTimestamp = () => { return Time.Millis() - startT; };
 
             bool diverted = false; // for not recording the stop rec gesture + esc
 
@@ -87,11 +91,40 @@ namespace Recordings
                         diverted = true;
                     }
                 }
-                rec.AddKeyFrame(new Recording.KeyFrameK(d, k, GetTimestamp()));
+
+                KeyActions ka;
+                switch (k)
+                {
+                    case Keys.LMenu:
+                    case Keys.RMenu:
+                    case Keys.LShiftKey:
+                    case Keys.RShiftKey:
+                    case Keys.LControlKey:
+                    case Keys.RControlKey:
+                        ka = d ? KeyActions.DOWN : KeyActions.UP;
+                        break;
+                    default:
+                        if (!d) return;
+                        ka = KeyActions.PRESS;
+                        break;
+                }
+
+                rec.AddKeyFrame(new Recording.KeyFrameK(ka, k, GetTimestamp()));
             };
 
+            bool ld = false, rd = false, md = false;
             recMouse = (a, x, y) =>
             {
+                if (a == MouseAction.WM_LBUTTONDOWN) ld = true;
+                if (a == MouseAction.WM_RBUTTONDOWN) rd = true;
+                if (a == MouseAction.WM_MBUTTONDOWN) md = false;
+
+                if (a == MouseAction.WM_LBUTTONUP) ld = false;
+                if (a == MouseAction.WM_RBUTTONUP) rd = false;
+                if (a == MouseAction.WM_MBUTTONUP) md = false;
+
+                if (a == MouseAction.WM_MOUSEMOVE && !ld && !rd && !md) return;
+
                 rec.AddKeyFrame(new Recording.KeyFrameM(a, x, y, GetTimestamp()));
             };
         }
@@ -104,7 +137,8 @@ namespace Recordings
             recKey = null;
             recMouse = null;
 
-            Console.WriteLine(rec.ToString());
+            recoringStopHandle.Notify(rec);
+            //Console.WriteLine(rec.ToString());
         }
 
         private void onKeyDown(Keys k)

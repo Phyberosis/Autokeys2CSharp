@@ -23,3 +23,5 @@ C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSim
 C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSimulator.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSimulator.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSimulator.pdb
+C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Data.dll
+C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Data.pdb

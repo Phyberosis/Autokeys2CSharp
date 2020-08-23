@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\workspace\CSharp\Autokeys2\Autokeys2\App.xaml
-5-2137700238
-
-111576240555
-131-783367043
-Resources\MainResources.xaml;Resources\MacrosTree.xaml;Views\MacrosView.xaml;MainWindow.xaml;Views\Trays\MacroItem.xaml;
+9399361245
+1-244604695
+12-1812195301
+132-2043995584
+Resources\MacrosLibrary.xaml;Resources\MacrosViewStyles.xaml;Resources\MainStyles.xaml;Resources\MacrosTreeStyle.xaml;Resources\MainResources.xaml;Views\InfoTray.xaml;Views\MacrosView.xaml;MainWindow.xaml;Views\MacroTreeItem.xaml;
 
 False
 

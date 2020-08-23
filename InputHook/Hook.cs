@@ -4,19 +4,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Data;
 
 namespace InputHook
 {
-    public enum MouseAction
-    {
-        WM_LBUTTONDOWN = 0x0201,
-        WM_LBUTTONUP = 0x0202,
-        WM_MOUSEMOVE = 0x0200,
-        WM_MOUSEWHEEL = 0x020A,
-        WM_RBUTTONDOWN = 0x0204,
-        WM_RBUTTONUP = 0x0205
-    }
-
     public class Hook
     {
         private delegate IntPtr LowLevelProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -211,7 +202,7 @@ namespace InputHook
                         MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
                         int x = hookStruct.pt.x, y = hookStruct.pt.y;
                         MouseAction ma = (MouseAction)wParam;
-
+                        //Console.WriteLine(ma.ToString());
                         const int MAXRANGE = 25; // sometimes mouse move reports 0, 0
                         if (x == 0 && y == 0 && Math.Abs(lx - x) > MAXRANGE &&
                             Math.Abs(ly - y) > MAXRANGE && ma == MouseAction.WM_MOUSEMOVE) return;
@@ -219,7 +210,7 @@ namespace InputHook
 
                         foreach (var fn in onMouse)
                         {
-                            fn((MouseAction)wParam, hookStruct.pt.x, hookStruct.pt.y);
+                            fn(ma, hookStruct.pt.x, hookStruct.pt.y);
                         }
                         //Console.WriteLine(hookStruct.pt.x + ", " + hookStruct.pt.y);
                     }

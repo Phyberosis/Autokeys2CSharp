@@ -13,7 +13,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="800"/>
+            <ColumnDefinition Width="500"/>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="20"/>
@@ -21,8 +21,8 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="200"/>
+            <RowDefinition MaxHeight="358"/>
+            <RowDefinition MaxHeight="200"/>
         </Grid.RowDefinitions>
 
         <local:MacrosView x:Name="vewLeft" Grid.Column="0" Grid.RowSpan="2"/>
@@ -32,15 +32,15 @@
                 <Button Name="btnExL" Content="&gt;" Style="{StaticResource expandButton}" Click="showHideLeft"/>
             </Border>
         </StackPanel>
-        
+
         <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource mainBorder}" MouseDown="onMouseDown">
             <Grid VerticalAlignment="Top" Style="{StaticResource mainGrid}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="200"/>
-                    <RowDefinition Height="90"/>
-                    <RowDefinition Height="65"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition MaxHeight="65" Height="65"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Style="{StaticResource vPanel}">
+                <StackPanel Grid.Row="0" Style="{StaticResource vPanel}" Margin="0,20">
                     <Button Name="btnRecord" Style="{StaticResource recButton}" Click="btnRecord_Click"/>
                     <Button Name="btnPlay" Style="{StaticResource playbutton}" Click="btnPlay_Click"/>
                 </StackPanel>
@@ -48,20 +48,21 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
+                        <!--<RowDefinition/>-->
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="80*"/>
+                        <ColumnDefinition Width="19*"/>
+                        <ColumnDefinition Width="99*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Content="Repeats" Style="{StaticResource myLabel}"/>
-                    <Label Grid.Column="0" Grid.Row="1" Content="Speed" Style="{StaticResource myLabel}"/>
-                    <Label Grid.Column="0" Grid.Row="2" Content="Shortcut" Style="{StaticResource myLabel}"/>
-                    <TextBox Name="txtRepeats" Text=". . ." Grid.Column="1" Grid.Row="0" Style="{StaticResource myText}"/>
-                    <TextBox Name="txtSpeed" Text=". . ." Grid.Column="1" Grid.Row="1" Style="{StaticResource myText}"/>
-                    <TextBox Name="txtkey" Text=". . ." Grid.Column="1" Grid.Row="2" Style="{StaticResource myText}"/>
+                    <Label Grid.Column="0" Grid.Row="0" Content="Repeats" Style="{StaticResource myLabel}" Grid.ColumnSpan="2" Margin="-2,1,1,1"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="Speed" Style="{StaticResource myLabel}" Grid.ColumnSpan="2" Margin="-2,1,1,1"/>
+                    <!--<Label Grid.Column="0" Grid.Row="2" Content="Shortcut" Style="{StaticResource myLabel}"/>-->
+                    <TextBox Name="txtRepeats" Text="1" Grid.Column="2" Grid.Row="0" Style="{StaticResource myText}" Margin="1,1,-2,1"/>
+                    <TextBox Name="txtSpeed" Text="1.0" Grid.Column="2" Grid.Row="1" Style="{StaticResource myText}" Margin="1,1,-2,1"/>
+                    <!--<TextBox Name="txtkey" Text="" Grid.Column="1" Grid.Row="2" Style="{StaticResource myText}"/>-->
                 </Grid>
-                <Grid Grid.Row="2" Margin="10" VerticalAlignment="Bottom" Height="40">
+                <Grid Grid.Row="2" Margin="10,0,10,10" VerticalAlignment="Bottom" Height="40" Grid.RowSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -72,4 +73,4 @@
             </Grid>
         </Border>
     </Grid>
-    </Window>
+</Window>

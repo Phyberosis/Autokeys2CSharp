@@ -49,10 +49,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventsTests.cs" />
     <Compile Include="HookAndEmulator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataTests.cs" />
@@ -64,6 +64,10 @@
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{cbfe44b4-cfd8-4698-89c6-06d1faecda58}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Events\Events.csproj">
+      <Project>{8d6b9e01-0934-428e-874d-500a4327de36}</Project>
+      <Name>Events</Name>
     </ProjectReference>
     <ProjectReference Include="..\external\WindowsInput\WindowsInput.csproj">
       <Project>{3549cd6f-80f8-450f-b99e-cf0a736b1f2a}</Project>

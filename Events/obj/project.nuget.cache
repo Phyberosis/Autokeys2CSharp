@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "MaQdi1C8Ny6+EOQrOS6+02CbH0y5dhZThCrjevnGfUseUqDahCvG929aVblVcetyMw5HaocvEOPh7jUxlW67Fg==",
+  "success": true,
+  "projectFilePath": "C:\\workspace\\CSharp\\Autokeys2\\Events\\Events.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\phybe\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\phybe\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

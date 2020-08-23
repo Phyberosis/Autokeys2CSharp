@@ -20,3 +20,5 @@ C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.cspro
 C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.dll
 C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.pdb
+C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Data.dll
+C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Data.pdb

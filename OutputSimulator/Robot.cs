@@ -9,6 +9,24 @@ namespace OutputSimulator
     {
         private IKeyboardSimulator ks = new KeyboardSimulator(new InputSimulator());
 
+        public void DoAction(KeyActions ka, Keys k)
+        {
+            VirtualKeyCode code = (VirtualKeyCode)k;
+            switch (ka)
+            {
+                case KeyActions.DOWN:
+                    ks.KeyDown(code);
+                    break;
+                case KeyActions.UP:
+                    ks.KeyUp(code);
+                    break;
+                case KeyActions.PRESS:
+                    ks.KeyDown(code);
+                    ks.KeyUp(code);
+                    break;
+            }
+        }
+
         public void KeyDown(Keys k)
         {
             //Console.WriteLine(((VirtualKeyCode)k).ToString());

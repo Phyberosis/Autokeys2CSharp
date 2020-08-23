@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Design.Serialization;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -9,47 +11,59 @@ using OutputSimulator;
 
 namespace Recordings
 {
-    internal class Recording
+    public class Recording
     {
         public abstract class KeyFrame
         {
-            private int t;
-            public KeyFrame(int time) { t = time; }
+            private long t;
+            public delegate void DoActionDelegate(Robot r);
+            public DoActionDelegate DoAction;
 
-            public int GetTime() { return t; }
+            public KeyFrame(long time) 
+            { 
+                t = time;
+            }
 
-            public abstract void DoAction(Robot r);
+            public long GetTime() { return t; }
+
+            public abstract string GetInfo();
+            public abstract string GetDescription();
+
         }
 
         public class KeyFrameK : KeyFrame
         {
-            private bool d;
+            private KeyActions ka;
             private Keys k;
 
-            public KeyFrameK(bool isDown, Keys k, int timestamp) : base(timestamp)
+            public KeyFrameK(KeyActions ka, Keys k, long timestamp) : base(timestamp)
             {
-                d = isDown;
                 this.k = k;
+                this.ka = ka;
+                DoAction = (r) => { r.DoAction(ka, k); };
+
+                //Info = k.ToString();
+                //Description = isDown ? "DOWN" : "UP";
             }
 
-            public override void DoAction(Robot r)
+            public override string GetInfo()
             {
-                if (d)
-                    r.KeyDown(k);
-                else
-                    r.KeyUp(k);
+                return k.ToString();
+            }
 
-                Console.WriteLine(k);
+            public override string GetDescription()
+            {
+                return ka.ToString();
             }
 
             public override string ToString()
             {
                 return new StringBuilder()
-                    .Append("KEY: ")
-                    .Append(d ? "DOWN" : " UP ")
-                    .Append("|")
                     .Append(k.ToString())
                     .Append(" ")
+                    .Append("|")
+                    .Append("KEY ")
+                    .Append(ka.ToString())
                     .Append(GetTime())
                     .ToString();
             }
@@ -60,60 +74,50 @@ namespace Recordings
             private MouseAction ma;
             private int x, y;
 
-            public KeyFrameM(MouseAction a, int x, int y, int timestamp) : base(timestamp)
+            public KeyFrameM(MouseAction a, int x, int y, long timestamp) : base(timestamp)
             {
                 this.x = x;
                 this.y = y;
                 this.ma = a;
+
+                DoAction = (r) => r.DoAction(ma, x, y);
+
+                //Info = MouseActionVerbalizer.Convert(a);
+                //Description = "("+x+", " +y+")";
             }
 
-            public override void DoAction(Robot r)
+            public override string GetInfo()
             {
-                switch (ma)
-                {
-                    case MouseAction.WM_LBUTTONDOWN:
-                        r.LDown(x, y);
-                        break;
-                    case MouseAction.WM_LBUTTONUP:
-                        r.LUp(x, y);
-                        break;
-                    case MouseAction.WM_MOUSEMOVE:
-                        r.Move(x, y);
-                        break;
-                    case MouseAction.WM_MOUSEWHEEL:
-                        Console.WriteLine("SCROLL not implemented!!");
-                        break;
-                    case MouseAction.WM_RBUTTONDOWN:
-                        r.RDown(x, y);
-                        break;
-                    case MouseAction.WM_RBUTTONUP:
-                        r.RUp(x, y);
-                        break;
-                }
+                return MouseActionVerbalizer.Convert(ma);
+            }
+
+            public override string GetDescription()
+            {
+                return MouseActionVerbalizer.GetTypePrefix(ma)+ " (" + x + ", " + y + ")";
             }
 
             public override string ToString()
             {
                 return new StringBuilder()
+                    .Append(ma.ToString())
+                    .Append("|")
                     .Append("MOUSE: ")
                     .Append(x)
                     .Append(", ")
                     .Append(y)
-                    .Append("|")
-                    .Append(ma.ToString())
                     .Append(" ")
                     .Append(GetTime())
                     .ToString();
             }
         }
 
-        private LinkedList<KeyFrame> kfs;
+        public LinkedList<KeyFrame> Keyframes { get; set; }
         private bool isPlaying = false;
         private LinkedList<KeyFrame> buffer;
 
         public Recording()
         {
-            kfs = new LinkedList<KeyFrame>();
+            Keyframes = new LinkedList<KeyFrame>(); 
         }
 
         public void Divert()
@@ -127,7 +131,7 @@ namespace Recordings
 
             foreach (KeyFrame k in buffer)
             {
-                kfs.AddLast(k);
+                Keyframes.AddLast(k);
             }
 
             buffer = null;
@@ -147,7 +151,7 @@ namespace Recordings
             }
             else
             {
-                kfs.AddLast(k);
+                Keyframes.AddLast(k);
             }
         }
 
@@ -158,7 +162,7 @@ namespace Recordings
             {
                 long startT = Time.Millis();
                 //Console.WriteLine(kfs.Count());
-                LinkedListNode<KeyFrame> node = kfs.First;
+                LinkedListNode<KeyFrame> node = Keyframes.First;
                 while(node != null)
                 {
                     KeyFrame k = node.Value;
@@ -175,6 +179,7 @@ namespace Recordings
                         continue;
                     }
 
+                    int todo_animate_mouse_move;
                     k.DoAction(r);
                     node = node.Next;
                 }
@@ -199,10 +204,10 @@ namespace Recordings
 
         public override string ToString()
         {
-            if (kfs.Count == 0) return "<<EMPTY REC>>";
+            if (Keyframes.Count == 0) return "<<EMPTY RECORDING>>";
 
             StringBuilder s = new StringBuilder();
-            foreach (KeyFrame k in kfs)
+            foreach (KeyFrame k in Keyframes)
             {
                 s.Append(k.ToString()).Append("\n");
             }

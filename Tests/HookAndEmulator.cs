@@ -47,8 +47,8 @@ namespace Tests
             });
 
             Thread.Sleep(w * 3);
-            m.LDown(x, y);
-            m.LUp(x, y);
+            m.DoAction(MouseAction.WM_LBUTTONDOWN, x, y);
+            m.DoAction(MouseAction.WM_LBUTTONUP, x, y);
             Thread.Sleep(w * 3);
             Assert.IsTrue(up && down);
         }

@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "poWfSIGlxSC9iEtvHT58vIG8r8qFB+LI7Qj2RQvouTqH+324RBB+Jh0LUOkCNRDzKNmeLEH460Olw+L0hcmJ0Q==",
+  "dgSpecHash": "y7yHw4t6CdjzhY/qGH4pa2e6sae37lS4WEPYqr1ejdsswf5KRdr0CNtYh9RwoVSe2J1inOmzMJ9Ja1qvugKLhA==",
   "success": true,
   "projectFilePath": "C:\\workspace\\CSharp\\Autokeys2\\OutputSimulator\\OutputSimulator.csproj",
   "expectedPackageFiles": [
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+    "C:\\Users\\phybe\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\phybe\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
   ],
   "logs": []
 }

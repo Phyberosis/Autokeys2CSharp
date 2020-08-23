@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Events\Events.csproj" />
     <ProjectReference Include="..\InputHook\InputHook.csproj" />
     <ProjectReference Include="..\OutputSimulator\OutputSimulator.csproj" />
   </ItemGroup>

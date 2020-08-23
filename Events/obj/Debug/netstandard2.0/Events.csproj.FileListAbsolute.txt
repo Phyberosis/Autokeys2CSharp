@@ -1,0 +1,9 @@
+C:\workspace\CSharp\Autokeys2\Events\bin\Debug\netstandard2.0\Events.deps.json
+C:\workspace\CSharp\Autokeys2\Events\bin\Debug\netstandard2.0\Events.dll
+C:\workspace\CSharp\Autokeys2\Events\bin\Debug\netstandard2.0\Events.pdb
+C:\workspace\CSharp\Autokeys2\Events\obj\Debug\netstandard2.0\Events.csprojAssemblyReference.cache
+C:\workspace\CSharp\Autokeys2\Events\obj\Debug\netstandard2.0\Events.AssemblyInfoInputs.cache
+C:\workspace\CSharp\Autokeys2\Events\obj\Debug\netstandard2.0\Events.AssemblyInfo.cs
+C:\workspace\CSharp\Autokeys2\Events\obj\Debug\netstandard2.0\Events.csproj.CoreCompileInputs.cache
+C:\workspace\CSharp\Autokeys2\Events\obj\Debug\netstandard2.0\Events.dll
+C:\workspace\CSharp\Autokeys2\Events\obj\Debug\netstandard2.0\Events.pdb

@@ -29,3 +29,5 @@ C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.csp
 C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.dll
 C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.pdb
+C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Events.dll
+C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Events.pdb

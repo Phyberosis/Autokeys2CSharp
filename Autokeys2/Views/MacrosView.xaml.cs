@@ -1,66 +1,95 @@
-﻿using Autokeys2.ViewModels;
-using Autokeys2.Views.Trays;
+﻿using Autokeys2.Views.Trays;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Events;
+using Recordings;
+using System.Collections.Generic;
 
 namespace Autokeys2.Views
 {
-    /// <summary>
-    /// Interaction logic for UserControl1.xaml
-    /// </summary>
-    //internal class MacroFolder
-    //{
-    //    public string Name;
-    //    public List<MacroItem> Items;
-
-    //    public MacroFolder(string name)
-    //    {
-    //        Name = name;
-    //        Items = new List<MacroItem>();
-    //    }
-    //}
-
     public partial class MacrosView : UserControl
     {
-        List<MacroItem> treeData;
-
+        private Recording data;
+        private RecordingModel model;
         public MacrosView()
         {
             InitializeComponent();
 
-            treeData = new List<MacroItem>();
-            treeData.Add(new MacroItem("1"));
+            EventsBuiltin.RegisterListener<Recording>(EventID.REC, 
+                (r)=>
+                {
+                    this.Dispatcher.Invoke(()=> { onRec(r); });
+                });
 
-            tree.DataContext = treeData;
+            model = new RecordingModel();
+            keyframesControl.DataContext = model;
+            model.Keyframes.Add(new InfoTray(1200, "Test", "down at 12, 12", null));
+            model.Keyframes.Add(new InfoTray(1200, "Test", "up at 12, 12", null));
+        }
 
-            Console.WriteLine("here");
+        private void onRec(Recording recording)
+        {
+            //model.Keyframes.Clear()
+            data = recording;
+            model = new RecordingModel(data);
+            keyframesControl.DataContext = model;
+        }
 
-            Task.Delay(0).ContinueWith((t) =>
-           {
-               var i = 2;
-               while(true)
-               {
-                   this.Dispatcher.Invoke(() =>
-                   {
-                       treeData.Add(new MacroItem(i.ToString()));
-                   });
-                   Thread.Sleep(500);
-                   i++;
-               }
-           });
+        #region deprecated tree
+        //private class LibraryTreeRoot
+        //{
+        //    public ObservableCollection<LibraryTreeFolder> Folders { get; set; }
+
+        //    public LibraryTreeRoot()
+        //    {
+        //        Folders = new ObservableCollection<LibraryTreeFolder>();
+        //    }
+        //}
+
+        // todo keep own ref for edits!!
+        //private LibraryTreeFolder newFolder(string header)
+        //{
+        //    var t = new LibraryTreeFolder() { Header = header };
+        //    root.Folders.Add(t);
+        //    return t;
+        //}
+
+        //// todo this does not work >> custom style overwriting w/ triggers?
+        //private void treeItemClicked(object sender, MouseButtonEventArgs e)
+        //{
+        //    var i = (TreeViewItem)sender;
+        //    var s = (LibraryTreeObject)i.DataContext;
+        //    Console.WriteLine(s.Header);
+        //}
+
+        #endregion
+    }
+
+    public class RecordingModel
+    {
+        public ObservableCollection<InfoTray> Keyframes { get; set; }
+
+        public RecordingModel()
+        {
+            Keyframes = new ObservableCollection<InfoTray>();
+        }
+
+        public RecordingModel(Recording rec) : this()
+        {
+            LinkedListNode<Recording.KeyFrame> curr = rec.Keyframes.First;
+            while(curr != null)
+            {
+                Recording.KeyFrame k = curr.Value;
+                Keyframes.Add(new InfoTray(k.GetTime(), k.GetInfo(), k.GetDescription(), curr));
+                curr = curr.Next;
+            }
+
         }
     }
+
 }
