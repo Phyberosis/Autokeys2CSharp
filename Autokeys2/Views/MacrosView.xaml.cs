@@ -40,8 +40,10 @@ namespace Autokeys2.Views
             //model.Keyframes.Add(t2);
 
             Recording rec = new Recording();
-            rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
-            rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
+            //rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
+            //rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
+            rec.AddKeyFrame(new Recording.KeyFrameM(MouseAction.WM_LBUTTONDOWN, 25, 55, 1200));
+            rec.AddKeyFrame(new Recording.KeyFrameM(MouseAction.WM_LBUTTONUP, 25, 55, 1300));
             onRec(rec);
         }
 

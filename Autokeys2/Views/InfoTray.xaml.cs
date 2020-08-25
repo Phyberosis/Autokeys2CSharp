@@ -41,6 +41,8 @@ namespace Autokeys2.Views
 
         private Key proposedKey;
 
+        private EventHandle<Overlay.OnMouseLocationSelected> selectMouseLocationHandle;
+
         public InfoTray(OpenLinkedListNode<Recording.KeyFrame> node,
             KeyFrameModel prev, RecordingModel.FocusContainer focusedTray)
         {
@@ -55,6 +57,7 @@ namespace Autokeys2.Views
 
             lostFocusChild = () => { };
 
+            selectMouseLocationHandle = EventsBuiltin.RegisterEvent<Overlay.OnMouseLocationSelected>(EventID.SELECT_MOUSE_LOCATION);
             //Task.Delay(0).ContinueWith((t) =>
             //{
             //    int i = 0;
@@ -138,25 +141,47 @@ namespace Autokeys2.Views
 
         private void txtInfo_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            txtInfo.Text = "<new key>";
-            proposedKey = Key.None;
-            txtInfo.Foreground = new SolidColorBrush(Colors.Orange);
-            Model.SaveState();
+            if(Model.HandlesKeys())
+            {
+                txtInfo.Text = "<new key>";
+                proposedKey = Key.None;
+                txtInfo.Foreground = new SolidColorBrush(Colors.Orange);
+                Model.SaveState();
 
-            e.Handled = true;
-            if (focusChangedChild(txtInfo)) setFocusChild(txtInfo, brdInfo,
-                ()=>
-                {
-                    if (proposedKey == Key.None) Model.LoadState();
-                    else Model.UpdateInfo(proposedKey);
-                });
+                e.Handled = true;
+                if (focusChangedChild(txtInfo)) setFocusChild(txtInfo, brdInfo,
+                    () =>
+                    {
+                        if (proposedKey == Key.None) Model.LoadState();
+                        else Model.UpdateInfo(proposedKey);
+                    });
+            }
+            else
+            {
+                bool forward = e.LeftButton == MouseButtonState.Pressed;
+                Model.CycleMouseInfo(forward);
+            }
         }
 
         private void txtDescription_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            e.Handled = true;
-            Model.UpdateDesc();
-            if (focusChangedChild(txtDescription)) setFocusChild(txtDescription, brdDesc, ()=>{ });
+            if (Model.HandlesKeys())
+            {
+                e.Handled = true;
+                Model.UpdateDesc();
+                //if (focusChangedChild(txtDescription)) setFocusChild(txtDescription, brdDesc, ()=>{ });
+            }
+            else
+            {
+                Overlay.OnMouseLocationSelected callback = (x, y) =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Model.UpdateDesc(x, y);
+                    });
+                };
+                selectMouseLocationHandle.Notify(callback);
+            }
         }
 
         private void txtInfo_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -246,22 +271,8 @@ namespace Autokeys2.Views
         public OpenLinkedListNode<Recording.KeyFrame> DataNode;
         private InfoTray ui;
 
-        //public event PropertyChangedEventHandler PropertyChanged;
-        //private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        //}
-
-        //protected virtual void OnPropertyChanged(string propertyName)
-        //{
-
-        //    PropertyChangedEventHandler handler = this.PropertyChanged;
-        //    if (handler != null)
-        //    {
-        //        var e = new PropertyChangedEventArgs(propertyName);
-        //        handler(this, e);
-        //    }
-        //}
+        private MouseAction[] actions;
+        private int currentAction;
 
         public KeyFrameModel(OpenLinkedListNode<Recording.KeyFrame> node,
             InfoTray ui)
@@ -270,6 +281,17 @@ namespace Autokeys2.Views
             Info = node.Value.GetInfo();
             Description = node.Value.GetDescription();
             Time = convertTime(node.Value.GetTime());
+
+            actions = (MouseAction[])Enum.GetValues(typeof(MouseAction));
+            var ca = node.Value.GetMouseAction();
+            for(int i = 0; i < actions.Length; i++)
+            {
+                if(actions[i] == ca)
+                {
+                    currentAction = i;
+                    break;
+                }
+            }
 
             this.ui = ui;
         }
@@ -308,6 +330,35 @@ namespace Autokeys2.Views
             var formsKey = (System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(k);
             var newKF = new Recording.KeyFrameK(kf.GetKeyAction(), formsKey, kf.GetTime());
             DataNode.Value = newKF;
+        }
+
+        public void CycleMouseInfo(bool forward)
+        {
+            var kf = DataNode.Value;
+            currentAction = forward? currentAction+1 : currentAction-1;
+            int l = Enum.GetNames(typeof(MouseAction)).Length;
+            if(forward && currentAction >= l)
+            {
+                currentAction = 1;
+            }
+            else if (!forward && currentAction <= 0)
+            {
+                currentAction = l-1;
+            }
+            int[] loc = kf.GetLocation();
+            var newKF = new Recording.KeyFrameM(actions[currentAction], loc[0], loc[1], kf.GetTime());
+            DataNode.Value = newKF;
+
+            Info = newKF.GetInfo();
+        }
+
+        public void UpdateDesc(int x, int y)
+        {
+            var kf = DataNode.Value;
+            var newKF = new Recording.KeyFrameM(actions[currentAction], x, y, kf.GetTime());
+            DataNode.Value = newKF;
+
+            Description = newKF.GetDescription();
         }
 
         public void UpdateDesc()

@@ -189,7 +189,7 @@ namespace InputHook
             }
         }
 
-        private int lx = 0, ly = 0;
+        //private int lx = 0, ly = 0;
         private IntPtr mHookReception(int nCode, IntPtr wParam, IntPtr lParam)
         {
             Task.Delay(0).ContinueWith((t) =>
@@ -203,10 +203,15 @@ namespace InputHook
                         int x = hookStruct.pt.x, y = hookStruct.pt.y;
                         MouseAction ma = (MouseAction)wParam;
                         //Console.WriteLine(ma.ToString());
-                        const int MAXRANGE = 25; // sometimes mouse move reports 0, 0
-                        if (x == 0 && y == 0 && Math.Abs(lx - x) > MAXRANGE &&
-                            Math.Abs(ly - y) > MAXRANGE && ma == MouseAction.WM_MOUSEMOVE) return;
-                        lx = x; ly = y;
+                        //const int MAXRANGE = 25; // sometimes mouse move reports 0, 0
+                        //if (x == 0 && y == 0 && Math.Abs(lx - x) > MAXRANGE &&
+                        //    Math.Abs(ly - y) > MAXRANGE && ma == MouseAction.WM_MOUSEMOVE) return;
+                        //lx = x; ly = y;
+                        if (x == 0 && y == 0)
+                        {
+                            x = Cursor.Position.X;
+                            y = Cursor.Position.Y;
+                        }
 
                         foreach (var fn in onMouse)
                         {

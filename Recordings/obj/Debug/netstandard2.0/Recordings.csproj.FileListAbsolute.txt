@@ -2,6 +2,7 @@ C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Recordings.dep
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Recordings.dll
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Recordings.pdb
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Data.dll
+C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Events.dll
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\InputHook.dll
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\OutputSimulator.dll
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\System.Windows.Forms.dll
@@ -12,6 +13,7 @@ C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Accessibility.
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\System.Deployment.dll
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\System.Runtime.Serialization.Formatters.Soap.dll
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Data.pdb
+C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Events.pdb
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\InputHook.pdb
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\OutputSimulator.pdb
 C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\WindowsInput.pdb
@@ -29,5 +31,3 @@ C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.csp
 C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.dll
 C:\workspace\CSharp\Autokeys2\Recordings\obj\Debug\netstandard2.0\Recordings.pdb
-C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Events.dll
-C:\workspace\CSharp\Autokeys2\Recordings\bin\Debug\netstandard2.0\Events.pdb

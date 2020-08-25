@@ -1,6 +1,7 @@
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\OutputSimulator.deps.json
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\OutputSimulator.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\OutputSimulator.pdb
+C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Data.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\System.Windows.Forms.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\WindowsInput.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\System.Security.dll
@@ -8,6 +9,7 @@ C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\System.Co
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Accessibility.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\System.Deployment.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\System.Runtime.Serialization.Formatters.Soap.dll
+C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Data.pdb
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\WindowsInput.pdb
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\WindowsInput.xml
 C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\System.Windows.Forms.xml
@@ -23,5 +25,3 @@ C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSim
 C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSimulator.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSimulator.dll
 C:\workspace\CSharp\Autokeys2\OutputSimulator\obj\Debug\netstandard2.0\OutputSimulator.pdb
-C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Data.dll
-C:\workspace\CSharp\Autokeys2\OutputSimulator\bin\Debug\netstandard2.0\Data.pdb

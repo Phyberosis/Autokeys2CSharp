@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design.Serialization;
+using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 using Data;
 using InputHook;
 using OutputSimulator;
@@ -19,14 +21,14 @@ namespace Recordings
             public delegate void DoActionDelegate(Robot r);
             public DoActionDelegate DoAction;
 
-            public KeyFrame(long time) 
-            { 
+            public KeyFrame(long time)
+            {
                 t = time;
             }
 
             public long GetTime() { return t; }
 
-            public void SlideTime(long delta) 
+            public void SlideTime(long delta)
             {
                 t += delta;
             }
@@ -34,6 +36,10 @@ namespace Recordings
             public abstract string GetInfo();
             public abstract string GetDescription();
 
+            public virtual void Step(float x, Robot r)
+            {
+
+            }
 
             #region need fixing
 
@@ -41,6 +47,8 @@ namespace Recordings
             public virtual KeyActions GetKeyAction() { return KeyActions.NONE; }
             public virtual Keys GetKey() { return Keys.None; }
 
+            public virtual MouseAction GetMouseAction() { return MouseAction.NONE; }
+            public virtual int[] GetLocation() { return new int[] { -1, -1 }; }
             #endregion
         }
 
@@ -110,14 +118,36 @@ namespace Recordings
                 //Description = "("+x+", " +y+")";
             }
 
+            public override void Step(float x, Robot r)
+            {
+                Point p = Cursor.Position;
+                float fx = -((x - 1) * (x - 1)) + 1;
+                float dx = this.x - p.X;
+                float dy = this.y - p.Y;
+
+                dx *= fx; dy *= fx;
+                dx += 0.5f; dy += 0.5f;
+                r.DoAction(MouseAction.WM_MOUSEMOVE, (int)(p.X + dx), (int)(p.Y + dy));
+            }
+
             public override string GetInfo()
             {
-                return MouseActionVerbalizer.Convert(ma);
+                return MouseActionVerbalizer.Convert(ma) + MouseActionVerbalizer.GetType(ma);
             }
 
             public override string GetDescription()
             {
-                return MouseActionVerbalizer.GetTypePrefix(ma)+ " (" + x + ", " + y + ")";
+                return "at (" + x + ", " + y + ")";
+            }
+
+            public override MouseAction GetMouseAction() 
+            {
+                return ma;
+            }
+
+            public override int[] GetLocation()
+            {
+                return new int[] { x, y };
             }
 
             public override string ToString()
@@ -185,7 +215,8 @@ namespace Recordings
             Thread t = new Thread(() =>
             {
                 long startT = Time.Millis();
-                //Console.WriteLine(kfs.Count());
+                long playT = startT;
+                //Console.WriteLine(Keyframes.Count());
                 OpenLinkedListNode<KeyFrame> node = Keyframes.First();
                 while(node != null)
                 {
@@ -197,13 +228,21 @@ namespace Recordings
                     }
 
                     long currT = Time.Millis() - startT;
-                    if (currT < k.GetTime())
+
+                    long nextT = k.GetTime();
+                    if (currT < nextT)
                     {
+                        long total = nextT - playT;
+                        long running = currT - playT;
+                        k.Step((float)running / (float)total, r);
                         Thread.Sleep(16);
                         continue;
                     }
+                    else
+                    {
+                        playT = currT;
+                    }
 
-                    int todo_animate_mouse_move;
                     k.DoAction(r);
                     node = node.Next;
                 }

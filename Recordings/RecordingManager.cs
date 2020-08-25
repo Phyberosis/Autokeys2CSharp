@@ -4,6 +4,7 @@ using Data;
 using InputHook;
 using OutputSimulator;
 using Events;
+using System.Xml;
 
 namespace Recordings
 {
@@ -113,19 +114,30 @@ namespace Recordings
             };
 
             bool ld = false, rd = false, md = false;
-            //int px = -1, py = -1;
+            int px = -1, py = -1;
             //Recording.KeyFrameM prevK;
+            bool isLastMove = false;
             recMouse = (a, x, y) =>
             {
-                if (a == MouseAction.WM_LBUTTONDOWN) ld = true;
-                if (a == MouseAction.WM_RBUTTONDOWN) rd = true;
-                if (a == MouseAction.WM_MBUTTONDOWN) md = true;
+                //if (a == MouseAction.WM_LBUTTONDOWN) ld = true;
+                //if (a == MouseAction.WM_RBUTTONDOWN) rd = true;
+                //if (a == MouseAction.WM_MBUTTONDOWN) md = true;
 
-                if (a == MouseAction.WM_LBUTTONUP) ld = false;
-                if (a == MouseAction.WM_RBUTTONUP) rd = false;
-                if (a == MouseAction.WM_MBUTTONUP) md = false;
+                //if (a == MouseAction.WM_LBUTTONUP) ld = false;
+                //if (a == MouseAction.WM_RBUTTONUP) rd = false;
+                //if (a == MouseAction.WM_MBUTTONUP) md = false;
 
-                if (a == MouseAction.WM_MOUSEMOVE && !ld && !rd && !md) return;
+                if (a == MouseAction.WM_MOUSEMOVE /*&& !ld && !rd && !md*/)
+                {
+                    px = x; py = y;
+                    isLastMove = true;
+                    return;
+                }
+                else
+                {
+                    if (isLastMove) rec.AddKeyFrame(new Recording.KeyFrameM(MouseAction.WM_MOUSEMOVE, px, py, GetTimestamp() - 1));
+                    isLastMove = false;
+                }
 
                 rec.AddKeyFrame(new Recording.KeyFrameM(a, x, y, GetTimestamp()));
             };

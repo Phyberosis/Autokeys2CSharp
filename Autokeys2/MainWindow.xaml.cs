@@ -1,4 +1,5 @@
-﻿using InputHook;
+﻿using Autokeys2.Views;
+using InputHook;
 using Recordings;
 using System;
 using System.Windows;
@@ -16,12 +17,15 @@ namespace Autokeys2
         private bool isRecording = false;
 
         private InputHandler inputHandler;
-
+        private Overlay overlay;
         public MainWindow()
         {
             InitializeComponent();
             recManager = new RecordingManager();
             inputHandler = new InputHandler();
+
+            overlay = new Overlay();
+            overlay.Show();
 
             //Task.Delay(0).ContinueWith((t) =>
             //{
@@ -101,6 +105,7 @@ namespace Autokeys2
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            overlay.Close();
             Hook.Dispose();
         }
     }

@@ -66,6 +66,7 @@ namespace OutputSimulator
 
         public void DoAction(MouseAction ma, int x, int y)
         {
+            if (ma == MouseAction.NONE) return;
             cmd(actionMapper[ma], x, y);
         }
 

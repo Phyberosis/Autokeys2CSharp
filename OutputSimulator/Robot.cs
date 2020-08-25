@@ -11,6 +11,8 @@ namespace OutputSimulator
 
         public void DoAction(KeyActions ka, Keys k)
         {
+            if (k == Keys.None) return;
+
             VirtualKeyCode code = (VirtualKeyCode)k;
             switch (ka)
             {

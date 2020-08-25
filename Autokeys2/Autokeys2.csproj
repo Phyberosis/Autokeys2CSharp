@@ -88,6 +88,9 @@
     <Compile Include="Views\MacroTreeItem.xaml.cs">
       <DependentUpon>MacroTreeItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Overlay.xaml.cs">
+      <DependentUpon>Overlay.xaml</DependentUpon>
+    </Compile>
     <Page Include="Resources\MacrosLibrary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -129,6 +132,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\MacroTreeItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Overlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

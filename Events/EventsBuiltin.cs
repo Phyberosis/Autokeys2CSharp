@@ -39,7 +39,7 @@ namespace Events
 
     public enum EventID
     {
-        REC, MV_FOCUSCHANGED,
+        REC, MV_FOCUSCHANGED, SELECT_MOUSE_LOCATION,
         TEST, TEST2
     }
 

@@ -1,12 +1,14 @@
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\InputHook.deps.json
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\InputHook.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\InputHook.pdb
+C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Data.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Windows.Forms.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Security.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Configuration.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Accessibility.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Deployment.dll
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Runtime.Serialization.Formatters.Soap.dll
+C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Data.pdb
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Windows.Forms.xml
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Security.xml
 C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\System.Configuration.xml
@@ -20,5 +22,3 @@ C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.cspro
 C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.dll
 C:\workspace\CSharp\Autokeys2\InputHook\obj\Debug\netstandard2.0\InputHook.pdb
-C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Data.dll
-C:\workspace\CSharp\Autokeys2\InputHook\bin\Debug\netstandard2.0\Data.pdb
