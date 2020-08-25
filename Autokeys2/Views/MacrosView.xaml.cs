@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Events;
 using Recordings;
 using System.Collections.Generic;
+using Data;
 
 namespace Autokeys2.Views
 {
@@ -26,10 +27,22 @@ namespace Autokeys2.Views
                     this.Dispatcher.Invoke(()=> { onRec(r); });
                 });
 
-            model = new RecordingModel();
-            keyframesControl.DataContext = model;
-            model.Keyframes.Add(new InfoTray(1200, "Test", "down at 12, 12", null));
-            model.Keyframes.Add(new InfoTray(1200, "Test", "up at 12, 12", null));
+            //test
+            //model = new RecordingModel();
+            //keyframesControl.DataContext = model;
+            //var n1 = new OpenLinkedListNode<Recording.KeyFrame>(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
+            //var n2 = new OpenLinkedListNode<Recording.KeyFrame>(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
+            //n1.Next = n2;
+            //var container = new RecordingModel.FocusContainer();
+            //var t1 = new InfoTray(n1, null, focusedTray: container);
+            //var t2 = new InfoTray(n2, t1.Model, focusedTray: container);
+            //model.Keyframes.Add(t1);
+            //model.Keyframes.Add(t2);
+
+            Recording rec = new Recording();
+            rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
+            rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
+            onRec(rec);
         }
 
         private void onRec(Recording recording)
@@ -68,10 +81,40 @@ namespace Autokeys2.Views
         //}
 
         #endregion
+
+        private void traysLostFocus(object sender, MouseButtonEventArgs e)
+        {
+            model.TraysLostFocus();
+        }
+
+        private void txtFileName_GotFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            model.TraysLostFocus();
+
+        }
+
+        private void btnSave_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            model.TraysLostFocus();
+
+        }
+
+        private void btnLoad_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            model.TraysLostFocus();
+
+        }
     }
 
     public class RecordingModel
     {
+        public class FocusContainer
+        {
+            public object Focused = null;
+            public Action FocusChanged = () => { };
+        }
+
+        private FocusContainer focusedTray = new FocusContainer();
         public ObservableCollection<InfoTray> Keyframes { get; set; }
 
         public RecordingModel()
@@ -79,13 +122,23 @@ namespace Autokeys2.Views
             Keyframes = new ObservableCollection<InfoTray>();
         }
 
+        public void TraysLostFocus()
+        {
+            var f = focusedTray;
+            f.FocusChanged();
+            f.Focused = null;
+            f.FocusChanged = () => { };
+        }
+
         public RecordingModel(Recording rec) : this()
         {
-            LinkedListNode<Recording.KeyFrame> curr = rec.Keyframes.First;
+            OpenLinkedListNode<Recording.KeyFrame> curr = rec.Keyframes.First();
+            KeyFrameModel prev = null;
             while(curr != null)
             {
-                Recording.KeyFrame k = curr.Value;
-                Keyframes.Add(new InfoTray(k.GetTime(), k.GetInfo(), k.GetDescription(), curr));
+                var tray = new InfoTray(curr, prev, focusedTray);
+                Keyframes.Add(tray);
+                prev = tray.Model;
                 curr = curr.Next;
             }
 

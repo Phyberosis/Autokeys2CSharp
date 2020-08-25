@@ -26,9 +26,22 @@ namespace Recordings
 
             public long GetTime() { return t; }
 
+            public void SlideTime(long delta) 
+            {
+                t += delta;
+            }
+
             public abstract string GetInfo();
             public abstract string GetDescription();
 
+
+            #region need fixing
+
+            public virtual bool HandlesKeys() { return false; }
+            public virtual KeyActions GetKeyAction() { return KeyActions.NONE; }
+            public virtual Keys GetKey() { return Keys.None; }
+
+            #endregion
         }
 
         public class KeyFrameK : KeyFrame
@@ -46,6 +59,8 @@ namespace Recordings
                 //Description = isDown ? "DOWN" : "UP";
             }
 
+            public override bool HandlesKeys() { return true; }
+
             public override string GetInfo()
             {
                 return k.ToString();
@@ -54,6 +69,15 @@ namespace Recordings
             public override string GetDescription()
             {
                 return ka.ToString();
+            }
+
+            public override Keys GetKey()
+            {
+               return k;
+            }
+            public override KeyActions GetKeyAction()
+            {
+                return ka;
             }
 
             public override string ToString()
@@ -111,13 +135,13 @@ namespace Recordings
             }
         }
 
-        public LinkedList<KeyFrame> Keyframes { get; set; }
+        public OpenLinkedList<KeyFrame> Keyframes { get; set; }
         private bool isPlaying = false;
         private LinkedList<KeyFrame> buffer;
 
         public Recording()
         {
-            Keyframes = new LinkedList<KeyFrame>(); 
+            Keyframes = new OpenLinkedList<KeyFrame>();
         }
 
         public void Divert()
@@ -162,7 +186,7 @@ namespace Recordings
             {
                 long startT = Time.Millis();
                 //Console.WriteLine(kfs.Count());
-                LinkedListNode<KeyFrame> node = Keyframes.First;
+                OpenLinkedListNode<KeyFrame> node = Keyframes.First();
                 while(node != null)
                 {
                     KeyFrame k = node.Value;
@@ -204,7 +228,7 @@ namespace Recordings
 
         public override string ToString()
         {
-            if (Keyframes.Count == 0) return "<<EMPTY RECORDING>>";
+            if (Keyframes.Count() == 0) return "<<EMPTY RECORDING>>";
 
             StringBuilder s = new StringBuilder();
             foreach (KeyFrame k in Keyframes)

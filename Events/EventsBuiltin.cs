@@ -39,7 +39,8 @@ namespace Events
 
     public enum EventID
     {
-        REC, TEST, TEST2
+        REC, MV_FOCUSCHANGED,
+        TEST, TEST2
     }
 
     public static class EventsBuiltin

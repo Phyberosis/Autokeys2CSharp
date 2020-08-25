@@ -80,7 +80,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Border Style="{StaticResource leftBorder}" Padding="10">
+    <Border Style="{StaticResource leftBorder}" Padding="10" MouseDown="traysLostFocus">
         <Grid>
             <Grid.ColumnDefinitions>
                 <!--<ColumnDefinition Width="200" MinWidth="100" MaxWidth="400"/>
@@ -113,18 +113,18 @@
                 <DockPanel DockPanel.Dock="Top" Height="30">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                         <Button x:Name="btnSave" Content="Save"
-                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch"/>
+                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch" MouseDown="btnSave_MouseDown"/>
                         <Button x:Name="btnLoad" Content="Load" 
-                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch"/>
+                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch" MouseDown="btnLoad_MouseDown"/>
                     </StackPanel>
                     <Border Style="{StaticResource leftBorder}">
-                        <TextBox x:Name="txtFileName" Style="{StaticResource fileNameBox}"/>
+                        <TextBox x:Name="txtFileName" Style="{StaticResource fileNameBox}" GotFocus="txtFileName_GotFocus"/>
                     </Border>
                 </DockPanel>
                 <DockPanel>
                     <Grid DockPanel.Dock="Top" Margin="0, 3, 0, 0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="61"/>
                             <ColumnDefinition Width="2"/>
                             <ColumnDefinition Width="90"/>
                             <ColumnDefinition Width="2"/>
@@ -137,7 +137,8 @@
                         <TextBlock Text="Description" Grid.Column="4" Style="{StaticResource keyframeHeaderBox}"/>
                     </Grid>
                     <ScrollViewer DockPanel.Dock="Bottom">
-                        <ItemsControl x:Name="keyframesControl" ItemsSource="{Binding Keyframes}"/>
+                        <ItemsControl x:Name="keyframesControl" ItemsSource="{Binding Keyframes}" 
+                                      Background="Transparent" MouseDown="traysLostFocus"/>
                     </ScrollViewer>
                 </DockPanel>
             </DockPanel>

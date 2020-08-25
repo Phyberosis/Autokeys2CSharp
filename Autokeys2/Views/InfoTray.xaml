@@ -8,7 +8,9 @@
              d:DesignHeight="30" d:DesignWidth="400"
              Margin="0, 0, 5, 5">
 
-    <!--<Border Style="{StaticResource mainBorder}" Background="Transparent">-->
+    <Border x:Name="brdAll" Style="{StaticResource mainBorder}"
+            Background="Transparent" BorderThickness="1"
+            BorderBrush="Transparent">
         <DockPanel>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -18,15 +20,28 @@
                     <ColumnDefinition Width="2"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="txtTime" Style="{StaticResource keyFrameBox}" Text="{Binding Time}"/>
+                
+                <TextBox x:Name="txtTime"
+                         Style="{StaticResource keyframeTextBox}" Text="{Binding Time}"
+                         GotFocus="txtTime_GotFocus"/>
                 <Label Grid.Column="1" Style="{StaticResource separator}"/>
-                <TextBlock Grid.Column="2" x:Name="txtInfo" Style="{StaticResource keyFrameBox}" Text="{Binding Info}"/>
+                <Border x:Name="brdInfo" Grid.Column="2" Style="{StaticResource highlightBorder}">
+                    <TextBlock x:Name="txtInfo"
+                               Style="{StaticResource keyframeBlock}" Text="{Binding Info}"
+                               IsMouseDirectlyOverChanged="txtInfo_IsMouseDirectlyOverChanged"
+                               MouseDown="txtInfo_MouseDown" KeyDown="txtInfo_KeyDown"/>
+                </Border>
                 <Label Grid.Column="3" Style="{StaticResource separator}"/>
-                <TextBlock Grid.Column="4" x:Name="txtDescription" Style="{StaticResource keyFrameBox}" Text="{Binding Description}"/>
+                <Border x:Name="brdDesc" Grid.Column="4" Style="{StaticResource highlightBorder}">
+                    <TextBlock x:Name="txtDescription" 
+                               Style="{StaticResource keyframeBlock}" Text="{Binding Description}"
+                               IsMouseDirectlyOverChanged="txtDescription_IsMouseDirectlyOverChanged"
+                               MouseDown="txtDescription_MouseDown"/>
+                </Border>
                 <!--<TextBlock x:Name="txtInfo" Style="{StaticResource clearTextBlock}" Text="Asd"/>
                 <Label Grid.Column="1" Background="#FF7ED3FB" Width="2"/>
                 <TextBlock Grid.Column="2" x:Name="txtDescription" Style="{StaticResource clearTextBlock}" Text="12, 12"/>-->
             </Grid>
         </DockPanel>
-    <!--</Border>-->
+    </Border>
 </UserControl>

@@ -1,4 +1,4 @@
 ﻿public enum KeyActions
 {
-    DOWN, UP, PRESS
+    NONE, DOWN, UP, PRESS
 }

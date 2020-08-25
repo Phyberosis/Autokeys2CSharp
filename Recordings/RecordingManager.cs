@@ -113,11 +113,13 @@ namespace Recordings
             };
 
             bool ld = false, rd = false, md = false;
+            //int px = -1, py = -1;
+            //Recording.KeyFrameM prevK;
             recMouse = (a, x, y) =>
             {
                 if (a == MouseAction.WM_LBUTTONDOWN) ld = true;
                 if (a == MouseAction.WM_RBUTTONDOWN) rd = true;
-                if (a == MouseAction.WM_MBUTTONDOWN) md = false;
+                if (a == MouseAction.WM_MBUTTONDOWN) md = true;
 
                 if (a == MouseAction.WM_LBUTTONUP) ld = false;
                 if (a == MouseAction.WM_RBUTTONUP) rd = false;
