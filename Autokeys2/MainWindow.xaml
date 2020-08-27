@@ -23,13 +23,13 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition MaxHeight="358"/>
-            <RowDefinition MaxHeight="200"/>
+            <RowDefinition Height="335" MaxHeight="335"/>
+            <RowDefinition MinHeight="0" Height="200" MaxHeight="200"/>
         </Grid.RowDefinitions>
 
         <local:MacrosView x:Name="vewLeft" Grid.Column="0" Grid.RowSpan="2"/>
 
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="0,214,0,0">
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="0,200,0,0">
             <Border Style="{StaticResource mainBorder}" BorderThickness="1">
                 <Button Name="btnExL" Content="&gt;" Style="{StaticResource expandButton}" Click="showHideLeft"/>
             </Border>

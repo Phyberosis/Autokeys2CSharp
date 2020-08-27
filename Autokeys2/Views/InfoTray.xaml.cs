@@ -217,12 +217,12 @@ namespace Autokeys2.Views
         private class InfoTrayM : InfoTray
         {
             private Recording.KeyframeM kfM;
-            private EventHandle<Overlay.OnMouseLocationSelected> selectMouseLocationHandle;
+            private EventHandle<Overlay.Callbacks> selectMouseLocationHandle;
 
             public InfoTrayM(Recording.Keyframe kf, RecordingModel.FocusContainer f) : base(kf, f)
             {
                 kfM = (Recording.KeyframeM)kf;
-                selectMouseLocationHandle = EventsBuiltin.RegisterEvent<Overlay.OnMouseLocationSelected>(EventID.SELECT_MOUSE_LOCATION);
+                selectMouseLocationHandle = EventsBuiltin.RegisterEvent<Overlay.Callbacks>(EventID.SELECT_MOUSE_LOCATION);
                 kfM.OnUpdateLoc((x, y) => { Model.Description = convertDesc(x, y); });
                 kfM.OnUpdateMA((ma) => { Model.Info = convertInfo(ma); });
 
@@ -236,6 +236,11 @@ namespace Autokeys2.Views
                 return "at (" + x + ", " + y + ")";
             }
 
+            private string convertDescUpdate(int x, int y)
+            {
+                return "< changing to (" + x + ", " + y + ") >";
+            }
+
             public string convertInfo(MouseAction ma)
             {
                 return MouseActionVerbalizer.Convert(ma) + MouseActionVerbalizer.GetType(ma);
@@ -246,7 +251,7 @@ namespace Autokeys2.Views
                 brdDesc.BorderBrush = new SolidColorBrush(Colors.Red);
                 txtDescription.Foreground = new SolidColorBrush(Colors.Orange);
                 string old = txtDescription.Text;
-                txtDescription.Text = "<select new mouse position>";
+                //txtDescription.Text = "<select new mouse position>";
                 Overlay.OnMouseLocationSelected callback = (x, y, c) =>
                 {
                     Dispatcher.Invoke(() =>
@@ -263,7 +268,11 @@ namespace Autokeys2.Views
                         }
                     });
                 };
-                selectMouseLocationHandle.Notify(callback);
+                Action<int, int> update = (x, y) =>
+                {
+                    Dispatcher.Invoke(() => { txtDescription.Text = convertDescUpdate(x, y); });
+                };
+                selectMouseLocationHandle.Notify(new Overlay.Callbacks(callback, update));
 
                 base.txtDescription_MouseDown(sender, e);
             }

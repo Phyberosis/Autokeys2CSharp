@@ -31,6 +31,19 @@ namespace Autokeys2.Views
         private readonly Color BLUE;
 
         public delegate void OnMouseLocationSelected(int x, int y, bool canceled = false);
+
+        public struct Callbacks
+        {
+            public OnMouseLocationSelected callback;
+            public Action<int, int> update;
+
+            public Callbacks(OnMouseLocationSelected c, Action<int, int> u) 
+            { 
+                callback = c;
+                update = u;
+            }
+        }
+
         private double W, H;
 
         private bool shown = false;
@@ -123,7 +136,7 @@ namespace Autokeys2.Views
             W = SystemParameters.PrimaryScreenWidth;
             H = SystemParameters.PrimaryScreenHeight;
 
-            EventsBuiltin.RegisterListener<OnMouseLocationSelected>(EventID.SELECT_MOUSE_LOCATION, selectMouseLocation);
+            EventsBuiltin.RegisterListener<Callbacks>(EventID.SELECT_MOUSE_LOCATION, selectMouseLocation);
             EventsBuiltin.RegisterListener<MyColors>(EventID.BORDER_SHOW, show);
             EventsBuiltin.RegisterListener(EventID.BORDER_HIDE, (o)=> { hide(); });
         }
@@ -178,12 +191,14 @@ namespace Autokeys2.Views
             });
         }
 
-        private void selectMouseLocation(OnMouseLocationSelected callback)
+        private void selectMouseLocation(Callbacks cb)
         {
-            Dispatcher.Invoke(() => { selectDelegate(callback); });
+            var callback = cb.callback;
+            var update = cb.update;
+            Dispatcher.Invoke(() => { selectDelegate(callback, update); });
         }
 
-        private void selectDelegate(OnMouseLocationSelected callback)
+        private void selectDelegate(OnMouseLocationSelected callback, Action<int, int> update)
         {
             show(MyColors.BLUE);
 
@@ -217,6 +232,11 @@ namespace Autokeys2.Views
                 if (k != Key.Escape)
                     return;
 
+                lock (syncLock)
+                {
+                    followMouse = false;
+                }
+
                 Dispatcher.Invoke(() =>
                 {
                     WindowState = WindowState.Minimized;
@@ -228,6 +248,7 @@ namespace Autokeys2.Views
                 Task.Delay(0).ContinueWith((t) =>
                 {
                     Hook.I().RemoveKeyHook(keyD, keyU);
+                    Hook.I().RemoveMouseHook(mouseDown);
                 });
             };
             Hook.I().AddKeyHook(keyD, keyU);
@@ -239,6 +260,8 @@ namespace Autokeys2.Views
 
                 canvas.Children.Clear();
                 System.Drawing.Point p = CursorMonitor.Position();
+
+                update(p.X, p.Y);
 
                 Line h = new Line();
                 h.Stroke = new SolidColorBrush(BLUE);
