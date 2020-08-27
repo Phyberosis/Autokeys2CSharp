@@ -59,14 +59,22 @@ namespace Recordings
                 long p = t;
                 if (time < 0) time = 0;
                 t = (long)((time * 1000f) + 0.5f);
+                Parent.checkTime(t, this);
                 updateTime(t);
 
                 Parent.shiftTimes(t - p, this);
             }
 
+            internal void setTimeInternal(long time)
+            {
+                t = time;
+                updateTime(t);
+            }
+
             internal void shiftTimeInternal(long delta)
             {
                 t += delta;
+                updateTime(t);
             }
 
             public void OnUpdateTime(Action<long> callback) { updateTime = callback; }
@@ -272,6 +280,16 @@ namespace Recordings
             buffer = null;
         }
 
+        private long checkTime(long time, Keyframe k)
+        {
+            var node = Keyframes.GetNode(k);
+            if (node.Previous == null) return 0;
+
+            long p = node.Previous.Value.GetTime();
+            if (time < p) time = p;
+            return time;
+        }
+
         private void shiftTimes(long delta, Keyframe k)
         {
             var node = Keyframes.GetNode(k);
@@ -283,14 +301,71 @@ namespace Recordings
             }
         }
 
+        public void Distribute(float speed)
+        {
+            var per = 1f / speed;
+            long period = ((long)(per * 1000 + 0.5f));
+            var node = Keyframes.First;
+
+            long t = 0;
+            while(node != null)
+            {
+                node.Value.setTimeInternal(t);
+
+                t += period;
+                node = node.Next;
+            }
+        }
+
+        public Keyframe AddDefaultM(Keyframe after)
+        {
+            return addDefaultDelegate(after, (time) =>
+            {
+               return new KeyframeM(MouseAction.WM_LBUTTONDOWN, 0, 0, time, this);
+            });
+        }
+
+        public Keyframe AddDefaultK(Keyframe after)
+        {
+            return addDefaultDelegate(after, (time) =>
+            {
+               return new KeyframeK(KeyActions.PRESS, Key.X, time, this);
+            });
+        }
+
+        private Keyframe addDefaultDelegate(Keyframe after, Func<long, Keyframe> makeNew)
+        {
+            Keyframe kf;
+            if (after == null)
+            {
+                kf = makeNew(0);
+                Keyframes.AddFirst(kf);
+            }
+            else
+            {
+                var n = Keyframes.GetNode(after);
+                var timeB = n.Next != null ? n.Next.Value.GetTime() : n.Value.GetTime();
+                long time = (long)((timeB + n.Value.GetTime() + 0.5f) / 2f);
+                kf = makeNew(time);
+
+                Keyframes.AddAfter(n, kf);
+            }
+
+            return kf;
+        }
+
         public void AddKeyframe(MouseAction ma, int x, int y, long time)
         {
-            addKeyframe(new KeyframeM(ma, x, y, time, this));
+            var kf = new KeyframeM(ma, x, y, time, this);
+            addKeyframe(kf);
+            //return kf;
         }
 
         public void AddKeyframe(KeyActions ka, Key k, long time)
         {
-            addKeyframe(new KeyframeK(ka, k, time, this));
+            var kf = new KeyframeK(ka, k, time, this);
+            addKeyframe(kf);
+            //return kf;
         }
 
         private void addKeyframe(Keyframe k)
@@ -311,20 +386,78 @@ namespace Recordings
             }
         }
 
+        public Keyframe GetLinkedWithOffset(Keyframe k, int os)
+        {
+            var node = Keyframes.GetNode(k);
+
+            Action move;
+            if (os > 0)
+                move = () => node = node.Next;
+            else
+                move = () => node = node.Previous;
+
+            int delta = os > 0 ? -1 : 1;
+            while (node != null && os != 0)
+            {
+                move();
+                os += delta;
+            }
+
+            return node?.Value;
+        }
+
+        public bool KeyframeOffsetExists(Keyframe k, int os)
+        {
+            var node = Keyframes.GetNode(k);
+
+            Action move;
+            if (os > 0)
+                move = () => node = node.Next;
+            else
+                move = () => node = node.Previous;
+
+            int delta = os > 0 ? -1 : 1;
+            while (node != null && os != 0)
+            {
+                move();
+                os += delta;
+            }
+
+            return os == 0 && node!= null;
+        }
+
         public void ShiftKeyframe(Keyframe k, Keyframe toAfter)
         {
+            LinkedList<long> times = new LinkedList<long>();
+            foreach(var kf in Keyframes)
+            {
+                times.AddLast(kf.GetTime());
+            }
+
             Keyframes.Remove(k);
-            Keyframes.AddAfter(toAfter, k);
+            InsertKeyframe(k, toAfter);
+
+            var nt = times.First;
+            var nk = Keyframes.First;
+
+            while(nk != null)
+            {
+                nk.Value.setTimeInternal(nt.Value);
+
+                nt = nt.Next;
+                nk = nk.Next;
+            }
         }
 
         public void InsertKeyframe(Keyframe k, Keyframe after)
         {
-
+            if (after == null) Keyframes.AddFirst(k);
+            else Keyframes.AddAfter(after, k);
         }
 
         public void DeleteKeyframe(Keyframe k)
         {
-
+            Keyframes.Remove(k);
         }
 
         public void Play(Robot r, Action onComplete, int repeats, float speed)

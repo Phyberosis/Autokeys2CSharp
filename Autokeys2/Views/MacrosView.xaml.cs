@@ -1,21 +1,10 @@
-﻿using Autokeys2.Views.Trays;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Events;
 using Recordings;
-using System.Collections.Generic;
-using Data;
-using MaterialDesignThemes.Wpf;
-using System.Windows.Markup;
-using System.IO;
-using System.CodeDom;
 using System.Linq;
-using System.Windows.Shell;
 
 namespace Autokeys2.Views
 {
@@ -23,6 +12,7 @@ namespace Autokeys2.Views
     {
         private Recording data;
         private RecordingModel model;
+
         public MacrosView()
         {
             InitializeComponent();
@@ -57,7 +47,7 @@ namespace Autokeys2.Views
         {
             //model.Keyframes.Clear()
             data = recording;
-            model = new RecordingModel(data, new Button[] { btnAddM, btnAddK, btnDel, btnDn, btnUp });
+            model = new RecordingModel(data, new Button[] { btnDel, btnDn, btnUp });
             keyframesControl.DataContext = model;
         }
 
@@ -123,32 +113,79 @@ namespace Autokeys2.Views
             string ADDM = btnAddM.Name;
             string ADDK = btnAddK.Name;
             string DEL = btnDel.Name;
+            string DIS = btnDis.Name;
 
-            //var tray = model.FocusedTray.Focused;
+            var tray = model.FocusedTray.Focused;
+            var kf = tray?.GetKeyframe();
             //var mNode = tray.Model;
             //var node = tray.Model.DataNode;
+            Focus();
 
             var s = ((Button)sender).Name;
-
             if (s.Equals(UP))
             {
+                const int os = -2;
+                if (!data.KeyframeOffsetExists(kf, os + 1)) return;
 
+                var p = data.GetLinkedWithOffset(kf, os);
+                data.ShiftKeyframe(kf, p);
+
+                var i = model.Keyframes.IndexOf(tray);
+                model.Keyframes.Remove(tray);
+                model.Keyframes.Insert(i - 1, tray);
             }
             else if (s.Equals(DN))
             {
+                const int os = 1;
+                if (!data.KeyframeOffsetExists(kf, os)) return;
 
+                var p = data.GetLinkedWithOffset(kf, os);
+                data.ShiftKeyframe(kf, p);
+
+                var i = model.Keyframes.IndexOf(tray);
+                model.Keyframes.Remove(tray);
+                model.Keyframes.Insert(i + 1, tray);
             }
-            else if (s.Equals(DN))
+            else if (s.Equals(ADDM))
             {
-
+                var nk = data.AddDefaultM(kf);
+                var i = tray != null ? model.Keyframes.IndexOf(tray) + 1 : 0;
+                model.Keyframes.Insert(i, InfoTray.BuildNew(nk, model.FocusedTray));
             }
-            else if (s.Equals(DN))
+            else if (s.Equals(ADDK))
             {
+                var nk = data.AddDefaultK(kf);
+                var i = tray != null ? model.Keyframes.IndexOf(tray) + 1 : 0;
+                model.Keyframes.Insert(i, InfoTray.BuildNew(nk, model.FocusedTray));
+            }
+            else if (s.Equals(DEL))
+            {
+                var c = model.Keyframes.Count;
+                if (c > 1)
+                {
+                    var i = model.Keyframes.IndexOf(tray);
+                    if (c == 2) i = i == 0 ? 1 : 0;
+                    else i = i == 0 ? 1 : i == c - 1 ? c - 2 : i;
 
+                    var t = model.Keyframes.ElementAt(i);
+                    t.FocusChangedTray();
+                    Console.WriteLine(i);
+                }
+                else
+                {
+                    traysLostFocusDelegate();
+                }
+
+                data.DeleteKeyframe(kf);
+                model.Keyframes.Remove(tray);
+            }
+            else if (s.Equals(DIS))
+            {
+                data.Distribute(MainWindow.Settings.GetSpeed());
             }
         }
-    }
 
+        #region old
         //    private void Util_Click(object sender, System.Windows.RoutedEventArgs e)
         //    {
         //        string UP = btnUp.Name;
@@ -351,7 +388,8 @@ namespace Autokeys2.Views
 
         //        }
         //    }
-
+        #endregion
+    }
     public class RecordingModel
     {
         public class FocusContainer
@@ -390,7 +428,7 @@ namespace Autokeys2.Views
             FocusedTray = new FocusContainer(this);
             Keyframes = new ObservableCollection<InfoTray>();
 
-            foreach(var kf in rec.Keyframes)
+            foreach (var kf in rec.Keyframes)
             {
                 var tray = InfoTray.BuildNew(kf, FocusedTray);
                 Keyframes.Add(tray);
@@ -409,7 +447,7 @@ namespace Autokeys2.Views
 
         public void SetUtilsEnable(bool enable)
         {
-            foreach(var btn in utils)
+            foreach (var btn in utils)
             {
                 btn.IsEnabled = enable;
             }

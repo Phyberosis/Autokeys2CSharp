@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Xml.XPath;
 
@@ -29,9 +30,21 @@ namespace Data
             hash = new Dictionary<T, LinkedListNode<T>>();
         }
 
+        public void AddFirst(T val)
+        {
+            var n = list.AddFirst(val);
+            hash.Add(val, n);
+        }
+
         public void AddLast(T val)
         {
             var n = list.AddLast(val);
+            hash.Add(val, n);
+        }
+
+        public void AddAfter(LinkedListNode<T> after, T val)
+        {
+            var n = list.AddAfter(after, val);
             hash.Add(val, n);
         }
 

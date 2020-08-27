@@ -1,26 +1,10 @@
-﻿using Data;
-using Events;
+﻿using Events;
 using Recordings;
-using SourceChord.FluentWPF;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Autokeys2.Views
 {
@@ -64,12 +48,12 @@ namespace Autokeys2.Views
             BLUE = (Color)FindResource("blue0");
             trayFocusContainer = focusedTray;
 
-            Model = new KeyframeModel(convertTime(kf.GetTime());
+            //Model = new KeyframeModel(convertTime(kf.GetTime());
+            Model = new KeyframeModel(this);
+            Model.Time = convertTime(kf.GetTime());
             kf.OnUpdateTime((t) => { Model.Time = convertTime(t); });
 
-            //Model.Prev = prev;
-            //if(prev!=null)prev.Next = Model;
-            //this.DataContext = Model;
+            this.DataContext = Model;
 
             lostFocusChild = () => { };
 
@@ -87,10 +71,18 @@ namespace Autokeys2.Views
 
         private static string convertTime(long t)
         {
-            return ((float)t / 1000f).ToString();
+            float i = (float)t / 1000f;
+            string s = i.ToString();
+            if (i * 10 % 10 == 0) s += ".0";
+            return s;
         }
 
-        private void focusChangedTray()
+        public Recording.Keyframe GetKeyframe()
+        {
+            return keyframe;
+        }
+
+        public void FocusChangedTray()
         {
             if (trayFocused) return;
             trayFocused = true;
@@ -155,20 +147,20 @@ namespace Autokeys2.Views
                 }
             };
 
-            focusChangedTray();
+            FocusChangedTray();
         }
 
         public virtual void txtInfo_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Focus();
-            focusChangedTray();
+            FocusChangedTray();
             e.Handled = true;
         }
 
         public virtual void txtDescription_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Focus();
-            focusChangedTray();
+            FocusChangedTray();
             e.Handled = true;
         }
 
@@ -178,7 +170,7 @@ namespace Autokeys2.Views
             { };
 
             this.Focus();
-            focusChangedTray();
+            FocusChangedTray();
             e.Handled = true;
         }
 
@@ -391,6 +383,7 @@ namespace Autokeys2.Views
             }
             set
             {
+                //Console.WriteLine(">>>>>>>>" +value);
                 time = value;
                 if (ui != null) ui.Dispatcher.Invoke(() => ui.txtTime.Text = time);
             }
@@ -405,6 +398,7 @@ namespace Autokeys2.Views
         public KeyframeModel(InfoTray ui)
         {
             this.ui = ui;
+            //Console.WriteLine("@@@@@@@@@@@@@@@@@"+ui);
             //actions = (MouseAction[])Enum.GetValues(typeof(MouseAction));
             //var ca = data.GetMouseAction();
             //for(int i = 0; i < actions.Length; i++)
