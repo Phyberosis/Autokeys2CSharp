@@ -327,7 +327,10 @@ namespace Recordings
 
         public Recording(StreamReader sr) : this()
         {
-           var t = sr.ReadLine(); // start
+            var first = sr.ReadLine(); // start
+            if (first.Equals(EMPTY))
+                return;
+
             string line = sr.ReadLine();
             while(!line.Equals(END))
             {
