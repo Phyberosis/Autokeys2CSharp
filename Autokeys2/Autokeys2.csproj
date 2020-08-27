@@ -182,6 +182,10 @@
       <Project>{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}</Project>
       <Name>WindowsInput</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FileHandler\FileHandler.csproj">
+      <Project>{E23371FE-3E83-46D9-839B-BA78FC629B83}</Project>
+      <Name>FileHandler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\InputHook\InputHook.csproj">
       <Project>{1e64456d-1a2c-48d4-8e3f-bc1fd6a36e52}</Project>
       <Name>InputHook</Name>

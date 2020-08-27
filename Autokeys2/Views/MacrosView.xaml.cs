@@ -5,6 +5,11 @@ using System.Windows.Input;
 using Events;
 using Recordings;
 using System.Linq;
+using FileHandler;
+using System.Threading.Tasks;
+using Microsoft.Win32;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Autokeys2.Views
 {
@@ -12,6 +17,8 @@ namespace Autokeys2.Views
     {
         private Recording data;
         private RecordingModel model;
+
+        private EventHandle<Recording> recLoaded;
 
         public MacrosView()
         {
@@ -22,6 +29,8 @@ namespace Autokeys2.Views
                 {
                     this.Dispatcher.Invoke(() => { onRec(r); });
                 });
+
+            recLoaded = EventsBuiltin.RegisterEvent<Recording>(EventID.REC_LOADED);
 
             //test
             //model = new RecordingModel();
@@ -35,19 +44,19 @@ namespace Autokeys2.Views
             //model.Keyframes.Add(t1);
             //model.Keyframes.Add(t2);
 
-            Recording rec = new Recording();
-            //rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
-            //rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
-            rec.AddKeyframe(MouseAction.WM_LBUTTONDOWN, 25, 1, 1200);
-            rec.AddKeyframe(MouseAction.WM_LBUTTONUP, 35, 2, 1300);
-            onRec(rec);
+            //Recording rec = new Recording();
+            ////rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
+            ////rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
+            //rec.AddKeyframe(MouseAction.WM_LBUTTONDOWN, 25, 1, 1200);
+            //rec.AddKeyframe(MouseAction.WM_LBUTTONUP, 35, 2, 1300);
+            //onRec(rec);
         }
 
         private void onRec(Recording recording)
         {
             //model.Keyframes.Clear()
             data = recording;
-            model = new RecordingModel(data, new Button[] { btnDel, btnDn, btnUp });
+            model = new RecordingModel(data, new Button[] { btnDel, btnDn, btnUp }, this);
             keyframesControl.DataContext = model;
         }
 
@@ -87,6 +96,7 @@ namespace Autokeys2.Views
 
         private void traysLostFocus(object sender, MouseButtonEventArgs e)
         {
+            Focus();
             traysLostFocusDelegate();
         }
 
@@ -95,16 +105,78 @@ namespace Autokeys2.Views
             traysLostFocusDelegate();
         }
 
+        private void txtFileName_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+        {
+            model.FileName = txtFileName.Text;
+        }
+
+        private void txtFileName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                model.FileName = txtFileName.Text;
+            }else if(e.Key == Key.Escape)
+            {
+                model.ResetFileName();
+            }
+        }
+
         private void btnSave_MouseDown(object sender, MouseButtonEventArgs e)
         {
             traysLostFocusDelegate();
+            if (txtFileName.Text == null || txtFileName.Text == string.Empty)
+            {
+                Task.Delay(0).ContinueWith((t) => {
+                    Dispatcher.Invoke(() => {
+                        txtFileName.Focus();
+                    });
+                });
+                return;
+            }
 
+            model.FileName = txtFileName.Text;
+
+            var l = Librarian.I;
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.InitialDirectory = l.Path;
+            dialog.Filter = "Autokeys Save|*.aks";
+            dialog.FileName = l.CompileName(model.FileName);
+            dialog.Title = "Saving "+dialog.FileName;
+            var result = dialog.ShowDialog();
+            
+            if (result == true)
+            {
+                var fs = dialog.OpenFile();
+
+                l.Save(data, MainWindow.SettingsModel.GetSettings(), fs);
+                fs.Close();
+            }
+
+            btnSave.Focus();
         }
 
         private void btnLoad_MouseDown(object sender, MouseButtonEventArgs e)
         {
             traysLostFocusDelegate();
 
+            var l = Librarian.I;
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.InitialDirectory = l.Path;
+            dialog.Filter = "Autokeys Save|*.aks";
+            dialog.Title = "Open";
+            var result = dialog.ShowDialog();
+
+            if(result == true)
+            {
+                var fs = dialog.OpenFile();
+                var f = l.Load(dialog.SafeFileName, fs);
+                fs.Close();
+
+                recLoaded.Notify(f.Recording);
+                model.FileName = f.FileName;
+                model.LoadRecording(f.Recording);
+                MainWindow.SettingsModel.LoadSettings(f.Settings);
+            }
         }
         private void Util_Click(object sender, System.Windows.RoutedEventArgs e)
         {
@@ -138,7 +210,7 @@ namespace Autokeys2.Views
             {
                 const int os = 1;
                 if (!data.KeyframeOffsetExists(kf, os)) return;
-
+                
                 var p = data.GetLinkedWithOffset(kf, os);
                 data.ShiftKeyframe(kf, p);
 
@@ -180,10 +252,9 @@ namespace Autokeys2.Views
             }
             else if (s.Equals(DIS))
             {
-                data.Distribute(MainWindow.Settings.GetSpeed());
+                data.Distribute(MainWindow.SettingsModel.GetSpeed());
             }
         }
-
     }
     public class RecordingModel
     {
@@ -213,31 +284,46 @@ namespace Autokeys2.Views
             public Action FocusChanged = () => { };
         }
 
+        private MacrosView ui;
+
+        private string fileName;
+        public string FileName
+        {
+            get { return fileName; }
+            set
+            {
+                fileName = value!=null? value : string.Empty;
+                ui?.Dispatcher.Invoke(() => { ui.txtFileName.Text = value; });
+            }
+        }
+
         public FocusContainer FocusedTray;
         private Button[] utils;
         public ObservableCollection<InfoTray> Keyframes { get; set; }
 
-        public RecordingModel(Recording rec, Button[] utils)
+        public RecordingModel(Recording rec, Button[] utils, MacrosView ui)
         {
+            this.ui = ui;
             this.utils = utils;
             FocusedTray = new FocusContainer(this);
             Keyframes = new ObservableCollection<InfoTray>();
 
+            LoadRecording(rec);
+        }
+
+        public void LoadRecording(Recording rec)
+        {
+            Keyframes.Clear();
             foreach (var kf in rec.Keyframes)
             {
                 var tray = InfoTray.BuildNew(kf, FocusedTray);
                 Keyframes.Add(tray);
             }
+        }
 
-            //OpenLinkedListNode<Recording.Keyframe> curr = rec.Keyframes.First;
-            //KeyframeModel prev = null;
-            //while (curr != null)
-            //{
-            //    var tray = new InfoTray(curr, FocusedTray);
-            //    Keyframes.Add(tray);
-            //    prev = tray.Model;
-            //    curr = curr.Next;
-            //}
+        public void ResetFileName()
+        {
+            FileName = fileName;
         }
 
         public void SetUtilsEnable(bool enable)

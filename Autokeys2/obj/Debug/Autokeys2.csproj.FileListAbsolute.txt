@@ -150,3 +150,5 @@ C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Debug\Autokeys2.csproj.CoreCompileIn
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Debug\Autokeys2.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Debug\Autokeys2.exe
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Debug\Autokeys2.pdb
+C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\FileHandler.dll
+C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\FileHandler.pdb

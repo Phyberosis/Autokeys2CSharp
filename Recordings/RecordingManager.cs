@@ -18,7 +18,7 @@ namespace Recordings
 
         private long startT;
         private Recording rec;
-        private EventHandle<Recording> recoringStopHandle;
+        private EventHandle<Recording> newRecordingHandle;
         private Robot robot = new Robot();
 
         private EventHandle<MyColors> showOverlayHandle;
@@ -57,10 +57,20 @@ namespace Recordings
             hook.AddMouseHook(onMouse);
             currState.Set(State.IDLE);
 
-            recoringStopHandle = EventsBuiltin.RegisterEvent<Recording>(EventID.REC);
+            rec = new Recording();
+
+            newRecordingHandle = EventsBuiltin.RegisterEvent<Recording>(EventID.REC);
+            newRecordingHandle.Notify(rec);
+
             showOverlayHandle = EventsBuiltin.RegisterEvent<MyColors>(EventID.BORDER_SHOW);
             hideOverlayHandle = EventsBuiltin.RegisterEvent(EventID.BORDER_HIDE);
             ExternalKeyMonitor.Monitor(Key.Escape, () => { rec?.Stop(); });
+
+            EventsBuiltin.RegisterListener<Recording>(EventID.REC_LOADED, (r) =>
+            {
+                rec = r;
+                Console.WriteLine("here");
+            });
         }
 
         public void Play(float speed, int repeats)
@@ -166,7 +176,7 @@ namespace Recordings
             recKey = null;
             recMouse = null;
 
-            recoringStopHandle.Notify(rec);
+            newRecordingHandle.Notify(rec);
             //Console.WriteLine(rec.ToString());
         }
 
