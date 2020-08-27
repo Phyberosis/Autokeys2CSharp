@@ -27,10 +27,10 @@ namespace Autokeys2.Views
         {
             InitializeComponent();
 
-            EventsBuiltin.RegisterListener<Recording>(EventID.REC, 
-                (r)=>
+            EventsBuiltin.RegisterListener<Recording>(EventID.REC,
+                (r) =>
                 {
-                    this.Dispatcher.Invoke(()=> { onRec(r); });
+                    this.Dispatcher.Invoke(() => { onRec(r); });
                 });
 
             //test
@@ -48,8 +48,8 @@ namespace Autokeys2.Views
             Recording rec = new Recording();
             //rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.A, 1200));
             //rec.AddKeyFrame(new Recording.KeyFrameK(KeyActions.PRESS, System.Windows.Forms.Keys.B, 1300));
-            rec.AddKeyFrame(new Recording.KeyFrameM(MouseAction.WM_LBUTTONDOWN, 25, 55, 1200));
-            rec.AddKeyFrame(new Recording.KeyFrameM(MouseAction.WM_LBUTTONUP, 25, 55, 1300));
+            rec.AddKeyframe(MouseAction.WM_LBUTTONDOWN, 25, 1, 1200);
+            rec.AddKeyframe(MouseAction.WM_LBUTTONUP, 35, 2, 1300);
             onRec(rec);
         }
 
@@ -57,7 +57,7 @@ namespace Autokeys2.Views
         {
             //model.Keyframes.Clear()
             data = recording;
-            model = new RecordingModel(data, new Button[] { btnAddM, btnAddK, btnDel, btnDn, btnUp});
+            model = new RecordingModel(data, new Button[] { btnAddM, btnAddK, btnDel, btnDn, btnUp });
             keyframesControl.DataContext = model;
         }
 
@@ -116,7 +116,6 @@ namespace Autokeys2.Views
             traysLostFocusDelegate();
 
         }
-
         private void Util_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             string UP = btnUp.Name;
@@ -125,201 +124,233 @@ namespace Autokeys2.Views
             string ADDK = btnAddK.Name;
             string DEL = btnDel.Name;
 
-            var tray = model.FocusedTray.Focused;
-            var mNode = tray.Model;
-            var node = tray.Model.DataNode;
+            //var tray = model.FocusedTray.Focused;
+            //var mNode = tray.Model;
+            //var node = tray.Model.DataNode;
 
             var s = ((Button)sender).Name;
-            if(s.Equals(UP))
-            {
-                //Console.WriteLine("u1");
-                //Console.WriteLine(node.Next?.Value.GetTime());
-                //Console.WriteLine(node.Previous?.Value.GetTime());
-                if (node.Previous == null) return;
 
-                // wait, just swap values???
-                var n = node.Next; var mn = mNode.Next; 
-                node.Next = node.Previous; mNode.Next = mNode.Prev;
-                node.Previous = node.Previous.Previous; mNode.Prev = mNode.Prev.Prev;
-
-                node.Next.Next = n; mNode.Next.Next = mn;
-                node.Next.Previous = node; mNode.Next.Prev = mNode;
-
-                if (node.Previous != null && node.Previous.Previous != null)
-                    node.Previous.Previous.Next = node.Previous;
-                if (node.Next != null && node.Next.Next != null)
-                    node.Next.Next.Previous = node.Next;
-
-                if (mNode.Prev != null && mNode.Prev.Prev != null)
-                    mNode.Prev.Prev.Next = mNode.Prev;
-                if (mNode.Next != null && mNode.Next.Next != null)
-                    mNode.Next.Next.Prev = mNode.Next;
-
-                var kfs = model.Keyframes;
-                int i = kfs.IndexOf(tray);
-                kfs.Remove(tray);
-                kfs.Insert(i - 1, tray);
-
-                var temp = node.Value.GetTime();
-                node.Value.SetTime(node.Next.Value.GetTime());
-                node.Next.Value.SetTime(temp);
-                mNode.SetTime(mNode.DataNode.Value.GetTime());
-                mNode.Next.SetTime(temp);
-
-                //Console.WriteLine("u2");
-            }
-            else if(s.Equals(DN))
+            if (s.Equals(UP))
             {
 
-                #region debug
-                //Console.WriteLine("d1");
-
-                //Action test = () =>
-                //{
-                //    Console.WriteLine("xx" + node.Value.GetTime());
-                //    var tt = model.Keyframes.First().Model.DataNode;
-                //    while (tt != null)
-                //    {
-                //        Console.WriteLine(tt.Value.GetTime());
-
-                //        tt = tt.Next;
-                //    }
-                //    var ttt = model.Keyframes.First().Model;
-                //    while (ttt != null)
-                //    {
-                //        Console.WriteLine(ttt.Time);
-
-                //        ttt = ttt.Next;
-                //    }
-                //};
-                //test();
-
-                //Console.WriteLine("xx"+node.Value.GetTime());
-                #endregion
-
-                if (node.Next == null) return;
-
-                var p = node.Previous; var mp = mNode.Prev;
-                node.Previous = node.Next; mNode.Prev = mNode.Next;
-                node.Next = node.Next.Next; mNode.Next = mNode.Next.Next;
-
-                node.Previous.Previous = p; mNode.Prev.Prev = mp;
-                node.Previous.Next = node; mNode.Prev.Next = mNode;
-
-                if (node.Previous != null && node.Previous.Previous != null)
-                    node.Previous.Previous.Next = node.Previous;
-                if (node.Next != null && node.Next.Next != null)
-                    node.Next.Next.Previous = node.Next;
-
-                if (mNode.Prev!= null && mNode.Prev.Prev != null)
-                    mNode.Prev.Prev.Next = mNode.Prev;
-                if (mNode.Next != null && mNode.Next.Next != null)
-                    mNode.Next.Next.Prev = mNode.Next;
-
-                #region debug
-                //Console.WriteLine("a" + node.Previous.Previous.Value.GetTime());
-                //Console.WriteLine("a" + node.Previous.Value.GetTime());
-                //Console.WriteLine("a" + node.Previous.Next.Value.GetTime());
-
-                //Action test2 = () =>
-                //{
-                //    Console.WriteLine("+++");
-
-                //    var tt = model.Keyframes.First().Model.DataNode;
-                //    int j = 0;
-                //    while (tt != null)
-                //    {
-                //        Console.WriteLine(j + " " + tt.Value.GetTime());
-
-                //        tt = tt.Next;
-                //        j++;
-                //    }
-                //    var ttt = model.Keyframes.First().Model;
-                //    j = 0;
-                //    while (ttt != null)
-                //    {
-                //        Console.WriteLine(j + " " + ttt.Time);
-
-                //        ttt = ttt.Next;
-                //        j++;
-                //    }
-                //};
-                //test2();
-                #endregion
-                var kfs = model.Keyframes;
-                int i = kfs.IndexOf(tray);
-                kfs.Remove(tray);
-                kfs.Insert(i + 1, tray);
-
-                var temp = node.Value.GetTime();
-                node.Value.SetTime(node.Previous.Value.GetTime());
-                node.Previous.Value.SetTime(temp);
-                mNode.Prev.SetTime(temp);
-                mNode.SetTime(mNode.DataNode.Value.GetTime());
-
-                #region debug
-                //Console.WriteLine("+++");
-
-                //var tt = model.Keyframes.First().Model.DataNode;
-                //while (tt != null)
-                //{
-                //    Console.WriteLine(tt.Value.GetTime());
-
-                //    tt = tt.Next;
-                //}
-                //var ttt = model.Keyframes.First().Model;
-                //while (ttt != null)
-                //{
-                //    Console.WriteLine(ttt.Time);
-
-                //    ttt = ttt.Next;
-                //}
-
-                //mNode = mNode.Prev.Prev;
-                //Console.WriteLine(mNode.DataNode.Value.GetTime());
-                //Console.WriteLine(mNode.Next.DataNode.Value.GetTime());
-                ////Console.WriteLine(mNode.Next.Next.DataNode.Value.GetTime());
-
-                //Console.WriteLine(mNode.DataNode.Value.GetTime());
-                //Console.WriteLine(mNode.DataNode.Next.Value.GetTime());
-                //Console.WriteLine(mNode.DataNode.Next.Next.Value.GetTime());
-                #endregion
-                //Console.WriteLine("d2");
             }
-            else if (s.Equals(ADDM) || s.Equals(ADDK))
+            else if (s.Equals(DN))
             {
-                Recording.Keyframe k;
-                var time = (node.Value.GetTime() + node.Next.Value.GetTime()) / 2;
-                if (s.Equals(ADDM)) k = new Recording.KeyFrameM(MouseAction.WM_LBUTTONDOWN, 0, 0, time);
-                else k = new Recording.KeyFrameK(KeyActions.PRESS, Key.X, time);
 
-                var newNode = new OpenLinkedListNode<Recording.Keyframe>(k);
-                if (node.Next != null) node.Next.Previous = newNode;
-                newNode.Next = node.Next;
-                node.Next = newNode;
-                newNode.Previous = node;
-
-                var mNext = mNode.Next;
-                InfoTray newTray = new InfoTray(newNode, mNode, model.FocusedTray);
-                if (mNext != null) mNext.Prev = newTray.Model;
-                newTray.Model.Next = mNext;
-
-                int i = model.Keyframes.IndexOf(tray);
-                if (i == model.Keyframes.Count-1) // last tray
-                {
-                    model.Keyframes.Add(newTray);
-                }
-                else
-                {
-                    model.Keyframes.Insert(i + 1, newTray);
-                }
             }
-            else if (s.Equals(DEL))
+            else if (s.Equals(DN))
+            {
+
+            }
+            else if (s.Equals(DN))
             {
 
             }
         }
     }
+
+        //    private void Util_Click(object sender, System.Windows.RoutedEventArgs e)
+        //    {
+        //        string UP = btnUp.Name;
+        //        string DN = btnDn.Name;
+        //        string ADDM = btnAddM.Name;
+        //        string ADDK = btnAddK.Name;
+        //        string DEL = btnDel.Name;
+
+        //        var tray = model.FocusedTray.Focused;
+        //        var mNode = tray.Model;
+        //        var node = tray.Model.DataNode;
+
+        //        var s = ((Button)sender).Name;
+        //        if(s.Equals(UP))
+        //        {
+        //            //Console.WriteLine("u1");
+        //            //Console.WriteLine(node.Next?.Value.GetTime());
+        //            //Console.WriteLine(node.Previous?.Value.GetTime());
+        //            if (node.Previous == null) return;
+
+        //            // wait, just swap values???
+        //            var n = node.Next; var mn = mNode.Next; 
+        //            node.Next = node.Previous; mNode.Next = mNode.Prev;
+        //            node.Previous = node.Previous.Previous; mNode.Prev = mNode.Prev.Prev;
+
+        //            node.Next.Next = n; mNode.Next.Next = mn;
+        //            node.Next.Previous = node; mNode.Next.Prev = mNode;
+
+        //            if (node.Previous != null && node.Previous.Previous != null)
+        //                node.Previous.Previous.Next = node.Previous;
+        //            if (node.Next != null && node.Next.Next != null)
+        //                node.Next.Next.Previous = node.Next;
+
+        //            if (mNode.Prev != null && mNode.Prev.Prev != null)
+        //                mNode.Prev.Prev.Next = mNode.Prev;
+        //            if (mNode.Next != null && mNode.Next.Next != null)
+        //                mNode.Next.Next.Prev = mNode.Next;
+
+        //            var kfs = model.Keyframes;
+        //            int i = kfs.IndexOf(tray);
+        //            kfs.Remove(tray);
+        //            kfs.Insert(i - 1, tray);
+
+        //            var temp = node.Value.GetTime();
+        //            node.Value.SetTime(node.Next.Value.GetTime());
+        //            node.Next.Value.SetTime(temp);
+        //            mNode.SetTime(mNode.DataNode.Value.GetTime());
+        //            mNode.Next.SetTime(temp);
+
+        //            //Console.WriteLine("u2");
+        //        }
+        //        else if(s.Equals(DN))
+        //        {
+
+        //            #region debug
+        //            //Console.WriteLine("d1");
+
+        //            //Action test = () =>
+        //            //{
+        //            //    Console.WriteLine("xx" + node.Value.GetTime());
+        //            //    var tt = model.Keyframes.First().Model.DataNode;
+        //            //    while (tt != null)
+        //            //    {
+        //            //        Console.WriteLine(tt.Value.GetTime());
+
+        //            //        tt = tt.Next;
+        //            //    }
+        //            //    var ttt = model.Keyframes.First().Model;
+        //            //    while (ttt != null)
+        //            //    {
+        //            //        Console.WriteLine(ttt.Time);
+
+        //            //        ttt = ttt.Next;
+        //            //    }
+        //            //};
+        //            //test();
+
+        //            //Console.WriteLine("xx"+node.Value.GetTime());
+        //            #endregion
+
+        //            if (node.Next == null) return;
+
+        //            var p = node.Previous; var mp = mNode.Prev;
+        //            node.Previous = node.Next; mNode.Prev = mNode.Next;
+        //            node.Next = node.Next.Next; mNode.Next = mNode.Next.Next;
+
+        //            node.Previous.Previous = p; mNode.Prev.Prev = mp;
+        //            node.Previous.Next = node; mNode.Prev.Next = mNode;
+
+        //            if (node.Previous != null && node.Previous.Previous != null)
+        //                node.Previous.Previous.Next = node.Previous;
+        //            if (node.Next != null && node.Next.Next != null)
+        //                node.Next.Next.Previous = node.Next;
+
+        //            if (mNode.Prev!= null && mNode.Prev.Prev != null)
+        //                mNode.Prev.Prev.Next = mNode.Prev;
+        //            if (mNode.Next != null && mNode.Next.Next != null)
+        //                mNode.Next.Next.Prev = mNode.Next;
+
+        //            #region debug
+        //            //Console.WriteLine("a" + node.Previous.Previous.Value.GetTime());
+        //            //Console.WriteLine("a" + node.Previous.Value.GetTime());
+        //            //Console.WriteLine("a" + node.Previous.Next.Value.GetTime());
+
+        //            //Action test2 = () =>
+        //            //{
+        //            //    Console.WriteLine("+++");
+
+        //            //    var tt = model.Keyframes.First().Model.DataNode;
+        //            //    int j = 0;
+        //            //    while (tt != null)
+        //            //    {
+        //            //        Console.WriteLine(j + " " + tt.Value.GetTime());
+
+        //            //        tt = tt.Next;
+        //            //        j++;
+        //            //    }
+        //            //    var ttt = model.Keyframes.First().Model;
+        //            //    j = 0;
+        //            //    while (ttt != null)
+        //            //    {
+        //            //        Console.WriteLine(j + " " + ttt.Time);
+
+        //            //        ttt = ttt.Next;
+        //            //        j++;
+        //            //    }
+        //            //};
+        //            //test2();
+        //            #endregion
+        //            var kfs = model.Keyframes;
+        //            int i = kfs.IndexOf(tray);
+        //            kfs.Remove(tray);
+        //            kfs.Insert(i + 1, tray);
+
+        //            var temp = node.Value.GetTime();
+        //            node.Value.SetTime(node.Previous.Value.GetTime());
+        //            node.Previous.Value.SetTime(temp);
+        //            mNode.Prev.SetTime(temp);
+        //            mNode.SetTime(mNode.DataNode.Value.GetTime());
+
+        //            #region debug
+        //            //Console.WriteLine("+++");
+
+        //            //var tt = model.Keyframes.First().Model.DataNode;
+        //            //while (tt != null)
+        //            //{
+        //            //    Console.WriteLine(tt.Value.GetTime());
+
+        //            //    tt = tt.Next;
+        //            //}
+        //            //var ttt = model.Keyframes.First().Model;
+        //            //while (ttt != null)
+        //            //{
+        //            //    Console.WriteLine(ttt.Time);
+
+        //            //    ttt = ttt.Next;
+        //            //}
+
+        //            //mNode = mNode.Prev.Prev;
+        //            //Console.WriteLine(mNode.DataNode.Value.GetTime());
+        //            //Console.WriteLine(mNode.Next.DataNode.Value.GetTime());
+        //            ////Console.WriteLine(mNode.Next.Next.DataNode.Value.GetTime());
+
+        //            //Console.WriteLine(mNode.DataNode.Value.GetTime());
+        //            //Console.WriteLine(mNode.DataNode.Next.Value.GetTime());
+        //            //Console.WriteLine(mNode.DataNode.Next.Next.Value.GetTime());
+        //            #endregion
+        //            //Console.WriteLine("d2");
+        //        }
+        //        else if (s.Equals(ADDM) || s.Equals(ADDK))
+        //        {
+        //            Recording.Keyframe k;
+        //            var time = (node.Value.GetTime() + node.Next.Value.GetTime()) / 2;
+        //            if (s.Equals(ADDM)) k = new Recording.KeyFrameM(MouseAction.WM_LBUTTONDOWN, 0, 0, time);
+        //            else k = new Recording.KeyFrameK(KeyActions.PRESS, Key.X, time);
+
+        //            var newNode = new OpenLinkedListNode<Recording.Keyframe>(k);
+        //            if (node.Next != null) node.Next.Previous = newNode;
+        //            newNode.Next = node.Next;
+        //            node.Next = newNode;
+        //            newNode.Previous = node;
+
+        //            var mNext = mNode.Next;
+        //            InfoTray newTray = new InfoTray(newNode, mNode, model.FocusedTray);
+        //            if (mNext != null) mNext.Prev = newTray.Model;
+        //            newTray.Model.Next = mNext;
+
+        //            int i = model.Keyframes.IndexOf(tray);
+        //            if (i == model.Keyframes.Count-1) // last tray
+        //            {
+        //                model.Keyframes.Add(newTray);
+        //            }
+        //            else
+        //            {
+        //                model.Keyframes.Insert(i + 1, newTray);
+        //            }
+        //        }
+        //        else if (s.Equals(DEL))
+        //        {
+
+        //        }
+        //    }
 
     public class RecordingModel
     {
@@ -359,15 +390,21 @@ namespace Autokeys2.Views
             FocusedTray = new FocusContainer(this);
             Keyframes = new ObservableCollection<InfoTray>();
 
-            OpenLinkedListNode<Recording.Keyframe> curr = rec.Keyframes.First();
-            KeyframeModel prev = null;
-            while (curr != null)
+            foreach(var kf in rec.Keyframes)
             {
-                var tray = new InfoTray(curr, prev, FocusedTray);
+                var tray = InfoTray.BuildNew(kf, FocusedTray);
                 Keyframes.Add(tray);
-                prev = tray.Model;
-                curr = curr.Next;
             }
+
+            //OpenLinkedListNode<Recording.Keyframe> curr = rec.Keyframes.First;
+            //KeyframeModel prev = null;
+            //while (curr != null)
+            //{
+            //    var tray = new InfoTray(curr, FocusedTray);
+            //    Keyframes.Add(tray);
+            //    prev = tray.Model;
+            //    curr = curr.Next;
+            //}
         }
 
         public void SetUtilsEnable(bool enable)
