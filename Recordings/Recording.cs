@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
+using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Input;
@@ -17,85 +19,127 @@ namespace Recordings
 {
     public class Recording
     {
+        public enum KFType
+        {
+            MOUSE, KEY
+        }
+
+
         public abstract class Keyframe
         {
             private long t;
             public delegate void DoActionDelegate(Robot r);
             public DoActionDelegate DoAction;
-            internal LinkedListNode<Keyframe> Container;
+            internal Recording Parent;
 
-            public Keyframe(long time, LinkedListNode<Keyframe> container)
+            public Action<long> updateTime;
+
+            public readonly KFType Type;
+
+            public Keyframe(long time, Recording parent, KFType type)
             {
-                Container = container;
+                //Container = container;
+                Parent = parent;
                 t = time;
+
+                Type = type;
             }
+
 
             public long GetTime() { return t; }
 
-            public void SlideTime(long delta)
+            //public void SlideTime(long delta)
+            //{
+            //    t += delta;
+            //    updateTime(getTimeSec());
+            //}
+
+            public void SetTime(float time)
             {
-                t += delta;
+                long p = t;
+                if (time < 0) time = 0;
+                t = (long)((time * 1000f) + 0.5f);
+                Parent.checkTime(t, this);
+                updateTime(t);
+
+                Parent.shiftTimes(t - p, this);
             }
 
-            public void SetTime(long time)
+            internal void setTimeInternal(long time)
             {
                 t = time;
+                updateTime(t);
             }
 
-            public abstract string GetInfo();
-            public abstract string GetDescription();
-
-            public virtual void Step(float x, Robot r)
+            internal void shiftTimeInternal(long delta)
             {
-
+                t += delta;
+                updateTime(t);
             }
+
+            public void OnUpdateTime(Action<long> callback) { updateTime = callback; }
+
+            //public abstract string GetInfo();
+            //public abstract string GetDescription();
+
+            public abstract void Step(float x, Robot r);
 
             #region need fixing
 
-            public virtual bool HandlesKeys() { return false; }
-            public virtual KeyActions GetKeyAction() { return KeyActions.NONE; }
-            public virtual Key GetKey() { return Key.None; }
+            //public virtual bool HandlesKeys() { return false; }
+            //public virtual KeyActions GetKeyAction() { return KeyActions.NONE; }
+            //public virtual Key GetKey() { return Key.None; }
 
-            public virtual MouseAction GetMouseAction() { return MouseAction.NONE; }
-            public virtual int[] GetLocation() { return new int[] { -1, -1 }; }
+            //public virtual MouseAction GetMouseAction() { return MouseAction.NONE; }
+            //public virtual int[] GetLocation() { return new int[] { -1, -1 }; }
+
             #endregion
         }
 
-        public class KeyFrameK : Keyframe
+        public class KeyframeK : Keyframe
         {
             private KeyActions ka;
             private Key k;
 
-            internal KeyFrameK(KeyActions ka, Key k, long timestamp, LinkedListNode<Keyframe> container) : base(timestamp, container)
+            private Action<KeyActions> updateKA;
+            private Action<Key> updateKey;
+
+            internal KeyframeK(KeyActions ka, Key k, long timestamp, Recording parent) 
+                : base(timestamp, parent, KFType.KEY)
             {
                 this.k = k;
                 this.ka = ka;
                 DoAction = (r) => { r.DoAction(ka, k); };
-
                 //Info = k.ToString();
                 //Description = isDown ? "DOWN" : "UP";
             }
 
-            public override bool HandlesKeys() { return true; }
+            public void OnUpdateKA(Action<KeyActions> cb) { updateKA = cb; }
+            public void OnUpdateKey(Action<Key> cb) { updateKey = cb; }
 
-            public override string GetInfo()
+            public void CycleKeyActions()
             {
-                return k.ToString();
+                ka++;
+                if ((int)ka >= Enum.GetNames(typeof(KeyActions)).Length) ka = (KeyActions)1;
+                updateKA(ka);
             }
 
-            public override string GetDescription()
+            public void SetKey(Key k)
             {
-                return ka.ToString();
+                this.k = k;
+                updateKey(k);
             }
 
-            public override Key GetKey()
-            {
-               return k;
-            }
-            public override KeyActions GetKeyAction()
+            public KeyActions GetKA()
             {
                 return ka;
             }
+
+            public Key GetKey()
+            {
+                return k;
+            }
+
 
             public override string ToString()
             {
@@ -108,14 +152,24 @@ namespace Recordings
                     .Append(GetTime())
                     .ToString();
             }
+
+            public override void Step(float x, Robot r)
+            {}
         }
 
-        public class KeyFrameM : Keyframe
+        public class KeyframeM : Keyframe
         {
             private MouseAction ma;
             private int x, y;
 
-            internal KeyFrameM(MouseAction a, int x, int y, long timestamp, LinkedListNode<Keyframe> container) : base(timestamp, container)
+            private Action<int, int> updateLoc;
+            private Action<MouseAction> updateMA;
+
+            private MouseAction[] actions;
+            private int currentAction;
+
+            internal KeyframeM(MouseAction a, int x, int y, long timestamp, Recording parent)
+                : base(timestamp, parent, KFType.MOUSE)
             {
                 this.x = x;
                 this.y = y;
@@ -123,8 +177,53 @@ namespace Recordings
 
                 DoAction = (r) => r.DoAction(ma, x, y);
 
-                //Info = MouseActionVerbalizer.Convert(a);
-                //Description = "("+x+", " +y+")";
+                actions = (MouseAction[])Enum.GetValues(typeof(MouseAction));
+                for (int i = 0; i < actions.Length; i++)
+                {
+                    if (actions[i] == ma)
+                    {
+                        currentAction = i;
+                        break;
+                    }
+                }
+            }
+
+            public void OnUpdateLoc(Action<int, int> cb) { updateLoc = cb; }
+            public void OnUpdateMA(Action<MouseAction> cb) { updateMA = cb; }
+
+            public void CycleMouseActions(bool forward)
+            {
+                currentAction = forward ? currentAction + 1 : currentAction - 1;
+                int l = Enum.GetNames(typeof(MouseAction)).Length;
+                if (forward && currentAction >= l)
+                {
+                    currentAction = 1;
+                }
+                else if (!forward && currentAction <= 0)
+                {
+                    currentAction = l - 1;
+                }
+                ma = actions[currentAction];
+
+                updateMA(ma);
+            }
+
+            public void UpdateLocation(int xx, int yy)
+            {
+                x = xx;
+                y = yy;
+
+                updateLoc(x, y);
+            }
+
+            public int[] GetLoc()
+            {
+                return new int[] { x, y };
+            }
+
+            public MouseAction GetMA()
+            {
+                return ma;
             }
 
             public override void Step(float x, Robot r)
@@ -137,26 +236,6 @@ namespace Recordings
                 dx *= fx; dy *= fx;
                 dx += 0.5f; dy += 0.5f;
                 r.DoAction(MouseAction.WM_MOUSEMOVE, (int)(p.X + dx), (int)(p.Y + dy));
-            }
-
-            public override string GetInfo()
-            {
-                return MouseActionVerbalizer.Convert(ma) + MouseActionVerbalizer.GetType(ma);
-            }
-
-            public override string GetDescription()
-            {
-                return "at (" + x + ", " + y + ")";
-            }
-
-            public override MouseAction GetMouseAction() 
-            {
-                return ma;
-            }
-
-            public override int[] GetLocation()
-            {
-                return new int[] { x, y };
             }
 
             public override string ToString()
@@ -174,13 +253,14 @@ namespace Recordings
             }
         }
 
-        public LinkedList<Keyframe> Keyframes { get; set; }
+        public HashedLinkedList<Keyframe> Keyframes { get; set; }
+
         private bool isPlaying = false;
         private LinkedList<Keyframe> buffer;
 
         public Recording()
         {
-            Keyframes = new LinkedList<Keyframe>();
+            Keyframes = new HashedLinkedList<Keyframe>();
         }
 
         public void Divert()
@@ -200,7 +280,95 @@ namespace Recordings
             buffer = null;
         }
 
-        public void AddKeyFrame(Keyframe k)
+        private long checkTime(long time, Keyframe k)
+        {
+            var node = Keyframes.GetNode(k);
+            if (node.Previous == null) return 0;
+
+            long p = node.Previous.Value.GetTime();
+            if (time < p) time = p;
+            return time;
+        }
+
+        private void shiftTimes(long delta, Keyframe k)
+        {
+            var node = Keyframes.GetNode(k);
+            node = node.Next;
+            while(node != null)
+            {
+                node.Value.shiftTimeInternal(delta);
+                node = node.Next;
+            }
+        }
+
+        public void Distribute(float speed)
+        {
+            var per = 1f / speed;
+            long period = ((long)(per * 1000 + 0.5f));
+            var node = Keyframes.First;
+
+            long t = 0;
+            while(node != null)
+            {
+                node.Value.setTimeInternal(t);
+
+                t += period;
+                node = node.Next;
+            }
+        }
+
+        public Keyframe AddDefaultM(Keyframe after)
+        {
+            return addDefaultDelegate(after, (time) =>
+            {
+               return new KeyframeM(MouseAction.WM_LBUTTONDOWN, 0, 0, time, this);
+            });
+        }
+
+        public Keyframe AddDefaultK(Keyframe after)
+        {
+            return addDefaultDelegate(after, (time) =>
+            {
+               return new KeyframeK(KeyActions.PRESS, Key.X, time, this);
+            });
+        }
+
+        private Keyframe addDefaultDelegate(Keyframe after, Func<long, Keyframe> makeNew)
+        {
+            Keyframe kf;
+            if (after == null)
+            {
+                kf = makeNew(0);
+                Keyframes.AddFirst(kf);
+            }
+            else
+            {
+                var n = Keyframes.GetNode(after);
+                var timeB = n.Next != null ? n.Next.Value.GetTime() : n.Value.GetTime();
+                long time = (long)((timeB + n.Value.GetTime() + 0.5f) / 2f);
+                kf = makeNew(time);
+
+                Keyframes.AddAfter(n, kf);
+            }
+
+            return kf;
+        }
+
+        public void AddKeyframe(MouseAction ma, int x, int y, long time)
+        {
+            var kf = new KeyframeM(ma, x, y, time, this);
+            addKeyframe(kf);
+            //return kf;
+        }
+
+        public void AddKeyframe(KeyActions ka, Key k, long time)
+        {
+            var kf = new KeyframeK(ka, k, time, this);
+            addKeyframe(kf);
+            //return kf;
+        }
+
+        private void addKeyframe(Keyframe k)
         {
             lock (this)
             {
@@ -218,20 +386,78 @@ namespace Recordings
             }
         }
 
+        public Keyframe GetLinkedWithOffset(Keyframe k, int os)
+        {
+            var node = Keyframes.GetNode(k);
+
+            Action move;
+            if (os > 0)
+                move = () => node = node.Next;
+            else
+                move = () => node = node.Previous;
+
+            int delta = os > 0 ? -1 : 1;
+            while (node != null && os != 0)
+            {
+                move();
+                os += delta;
+            }
+
+            return node?.Value;
+        }
+
+        public bool KeyframeOffsetExists(Keyframe k, int os)
+        {
+            var node = Keyframes.GetNode(k);
+
+            Action move;
+            if (os > 0)
+                move = () => node = node.Next;
+            else
+                move = () => node = node.Previous;
+
+            int delta = os > 0 ? -1 : 1;
+            while (node != null && os != 0)
+            {
+                move();
+                os += delta;
+            }
+
+            return os == 0 && node!= null;
+        }
+
         public void ShiftKeyframe(Keyframe k, Keyframe toAfter)
         {
+            LinkedList<long> times = new LinkedList<long>();
+            foreach(var kf in Keyframes)
+            {
+                times.AddLast(kf.GetTime());
+            }
+
             Keyframes.Remove(k);
-            Keyframes.AddAfter(toAfter.Container, k);
+            InsertKeyframe(k, toAfter);
+
+            var nt = times.First;
+            var nk = Keyframes.First;
+
+            while(nk != null)
+            {
+                nk.Value.setTimeInternal(nt.Value);
+
+                nt = nt.Next;
+                nk = nk.Next;
+            }
         }
 
         public void InsertKeyframe(Keyframe k, Keyframe after)
         {
-
+            if (after == null) Keyframes.AddFirst(k);
+            else Keyframes.AddAfter(after, k);
         }
 
         public void DeleteKeyframe(Keyframe k)
         {
-
+            Keyframes.Remove(k);
         }
 
         public void Play(Robot r, Action onComplete, int repeats, float speed)

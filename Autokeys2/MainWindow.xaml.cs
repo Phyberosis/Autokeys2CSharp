@@ -21,14 +21,14 @@ namespace Autokeys2
 
         private Overlay overlay;
 
-        private Settings settings;
+        public static Settings Settings;
 
         public MainWindow()
         {
             InitializeComponent();
-            settings = new Settings(this);
-            txtRepeats.DataContext = settings;
-            txtSpeed.DataContext = settings;
+            Settings = new Settings(this);
+            txtRepeats.DataContext = Settings;
+            txtSpeed.DataContext = Settings;
 
             recManager = new RecordingManager();
 
@@ -98,7 +98,7 @@ namespace Autokeys2
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
-            recManager.Play(settings.GetSpeed(), settings.GetRepeats());
+            recManager.Play(Settings.GetSpeed(), Settings.GetRepeats());
             WindowState = WindowState.Minimized;
         }
 
@@ -136,12 +136,12 @@ namespace Autokeys2
 
         private void txtRepeats_KeyDown(object sender, KeyEventArgs e)
         {
-            handleTextboxShortcuts(e, settings.RevertRepeats);
+            handleTextboxShortcuts(e, Settings.RevertRepeats);
         }
 
         private void txtSpeed_KeyDown(object sender, KeyEventArgs e)
         {
-            handleTextboxShortcuts(e, settings.RevertSpeed);
+            handleTextboxShortcuts(e, Settings.RevertSpeed);
         }
     }
 

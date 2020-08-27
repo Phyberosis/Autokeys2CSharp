@@ -23,7 +23,7 @@ public static class MouseActionVerbalizer
     {
         string a = ma.ToString();
         string r =  a.StartsWith("WM_L") ? "Left" : a.StartsWith("WM_R") ? "Right" : a.StartsWith("WM_MB") ? "Middle" : "Move";
-        return r + " Mouse";
+        return r.StartsWith("Mo")? r : r + ", ";
     }
 
     public static string GetType(MouseAction ma)

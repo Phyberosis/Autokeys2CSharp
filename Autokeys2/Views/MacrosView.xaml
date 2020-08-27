@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Autokeys2.Views"
              mc:Ignorable="d"
-             Name="brdLeft">
+             Name="brdLeft"
+             Focusable="True" FocusVisualStyle="{x:Null}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -158,10 +159,10 @@
 
                     <Button x:Name="btnUp" Content="Move&#10;Up" Grid.Column="0" Grid.Row="0" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
                     <Button x:Name="btnDn" Content="Move&#10;Down" Grid.Column="0" Grid.Row="1" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
-                    <Button x:Name="btnAddM" Content="Add&#10;Mouse" Grid.Column="1" Grid.Row="0" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
-                    <Button x:Name="btnAddK" Content="Add&#10;Key" Grid.Column="1" Grid.Row="1" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
-                    <Button x:Name="btnDel" Content="Delete" Grid.Column="1" Grid.Row="2" Style="{StaticResource trayUtilButton}" Click="Util_Click">
-                    </Button>
+                    <Button x:Name="btnAddM" Content="Add&#10;Mouse" Grid.Column="1" Grid.Row="0" IsEnabled="True" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnAddK" Content="Add&#10;Key" Grid.Column="1" Grid.Row="1" IsEnabled="True" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnDel" Content="Delete" Grid.Column="0" Grid.Row="2" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnDis" Content="Distribute" Grid.Column="1" Grid.Row="2" IsEnabled="True" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
                 </Grid>
             </DockPanel>
         </Grid>

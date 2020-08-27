@@ -124,7 +124,7 @@ namespace Recordings
                         break;
                 }
 
-                rec.AddKeyFrame(new Recording.KeyFrameK(ka, k, GetTimestamp()));
+                rec.AddKeyframe(ka, k, GetTimestamp());
             };
 
             //bool ld = false, rd = false, md = false;
@@ -149,11 +149,11 @@ namespace Recordings
                 }
                 else
                 {
-                    if (isLastMove) rec.AddKeyFrame(new Recording.KeyFrameM(MouseAction.WM_MOUSEMOVE, px, py, GetTimestamp() - 1));
+                    if (isLastMove) rec.AddKeyframe(MouseAction.WM_MOUSEMOVE, px, py, GetTimestamp() - 1);
                     isLastMove = false;
                 }
 
-                rec.AddKeyFrame(new Recording.KeyFrameM(a, x, y, GetTimestamp()));
+                rec.AddKeyframe(a, x, y, GetTimestamp());
             };
         }
 
