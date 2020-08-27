@@ -81,7 +81,7 @@
     </UserControl.Resources>
 
     <Border Style="{StaticResource leftBorder}" Padding="10" MouseDown="traysLostFocus">
-        <Grid MinHeight="200">
+        <Grid MinHeight="200"> 
             <Grid.ColumnDefinitions>
                 <!--<ColumnDefinition Width="200" MinWidth="100" MaxWidth="400"/>
                 <ColumnDefinition Width="5"/>-->
@@ -112,13 +112,15 @@
             <DockPanel Grid.Column="0">
                 <DockPanel DockPanel.Dock="Top" Height="30">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <Button x:Name="btnSave" Content="Save"
-                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch" MouseDown="btnSave_MouseDown"/>
-                        <Button x:Name="btnLoad" Content="Load" 
-                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch" MouseDown="btnLoad_MouseDown"/>
+                        <Button x:Name="btnSave" Content="Save" Focusable="True"
+                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch" PreviewMouseDown="btnSave_MouseDown" />
+                        <Button x:Name="btnLoad" Content="Load" Focusable="True"
+                                Style="{StaticResource utilButton}" VerticalAlignment="Stretch" PreviewMouseDown="btnLoad_MouseDown"/>
                     </StackPanel>
-                    <Border Style="{StaticResource leftBorder}">
-                        <TextBox x:Name="txtFileName" Style="{StaticResource fileNameBox}" GotFocus="txtFileName_GotFocus"/>
+                    <Border Style="{StaticResource leftBorder}" Padding="5">
+                        <TextBox x:Name="txtFileName"
+                                 Style="{StaticResource fileNameBox}" GotFocus="txtFileName_GotFocus"
+                                 LostFocus="txtFileName_LostFocus" KeyDown="txtFileName_KeyDown"/>
                     </Border>
                 </DockPanel>
                 <DockPanel>

@@ -8,6 +8,7 @@ using System.Windows.Shell;
 using Monitors;
 using System.Windows.Media;
 using System.Windows.Controls;
+using Data;
 
 namespace Autokeys2
 {
@@ -21,14 +22,14 @@ namespace Autokeys2
 
         private Overlay overlay;
 
-        public static Settings Settings;
+        public static SettingsModel SettingsModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            Settings = new Settings(this);
-            txtRepeats.DataContext = Settings;
-            txtSpeed.DataContext = Settings;
+            SettingsModel = new SettingsModel(this);
+            txtRepeats.DataContext = SettingsModel;
+            txtSpeed.DataContext = SettingsModel;
 
             recManager = new RecordingManager();
 
@@ -98,7 +99,7 @@ namespace Autokeys2
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
-            recManager.Play(Settings.GetSpeed(), Settings.GetRepeats());
+            recManager.Play(SettingsModel.GetSpeed(), SettingsModel.GetRepeats());
             WindowState = WindowState.Minimized;
         }
 
@@ -136,22 +137,18 @@ namespace Autokeys2
 
         private void txtRepeats_KeyDown(object sender, KeyEventArgs e)
         {
-            handleTextboxShortcuts(e, Settings.RevertRepeats);
+            handleTextboxShortcuts(e, SettingsModel.RevertRepeats);
         }
 
         private void txtSpeed_KeyDown(object sender, KeyEventArgs e)
         {
-            handleTextboxShortcuts(e, Settings.RevertSpeed);
+            handleTextboxShortcuts(e, SettingsModel.RevertSpeed);
         }
     }
 
-    public class Settings
+    public class SettingsModel
     {
-        private const float MAX_SPEED = 20;
-        private const float MIN_SPEED = 0.25f;
-
-        private int repeats, lastR;
-        private float speed, lastS;
+        private Settings current, last;
 
         private MainWindow ui;
 
@@ -159,20 +156,15 @@ namespace Autokeys2
         {
             get
             {
-                return repeats.ToString();
+                return current.Repeats.ToString();
             }
             set
             {
-                if(value.Length > 3)
-                {
-                    value = "999";
-                }
                 int r;
                 if(int.TryParse(value, out r))
                 {
-                    if (r < 0) r = 0;
-                    lastR = repeats;
-                    repeats = r;
+                    last.Repeats = current.Repeats;
+                    current.Repeats = r;
                 }
                 ui.txtRepeats.Text = Repeats;
             }
@@ -182,8 +174,8 @@ namespace Autokeys2
         {
             get
             {
-                string s = speed.ToString();
-                if (Math.Round(speed) == speed) s += ".0";
+                string s = current.Speed.ToString();
+                if (Math.Round(current.Speed) == current.Speed) s += ".0";
                 return s;
             }
             set
@@ -191,41 +183,53 @@ namespace Autokeys2
                 float s;
                 if(float.TryParse(value, out s))
                 {
-                    if (s < MIN_SPEED) s = MIN_SPEED;
-                    if (s > MAX_SPEED) s = MAX_SPEED;
-                    lastS = speed;
-                    speed = s;
+                    last.Speed = current.Speed;
+                    current.Speed = s;
                 }
 
                 ui.txtSpeed.Text = Speed;
             }
         }
 
-        public Settings(MainWindow ui)
+        public SettingsModel(MainWindow ui)
         {
-            repeats = 0;
-            speed = 1;
+            current = new Settings();
+            last = new Settings();
+            current.Repeats = 0;
+            current.Speed = 1;
             this.ui = ui;
+        }
+
+        public Settings GetSettings()
+        {
+            return current;
+        }
+
+        public void LoadSettings(Settings s)
+        {
+            current = s;
+            Speed = current.Speed.ToString();
+            Repeats = current.Repeats.ToString();
         }
 
         public int GetRepeats()
         {
-            return repeats;
+            return current.Repeats;
         }
 
         public float GetSpeed()
         {
-            return speed;
+            return current.Speed;
         }
 
         public void RevertRepeats()
         {
-            Repeats = lastR.ToString();
+            Repeats = last.Repeats.ToString();
         }
 
         public void RevertSpeed()
         {
-            Speed = lastS.ToString();
+            Speed = last.Speed.ToString();
         }
     }
 

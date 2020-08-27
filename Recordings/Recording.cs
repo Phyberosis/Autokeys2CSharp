@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
+using System.IO;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -36,13 +38,33 @@ namespace Recordings
 
             public readonly KFType Type;
 
-            public Keyframe(long time, Recording parent, KFType type)
+            internal Keyframe(long time, Recording parent, KFType type)
             {
                 //Container = container;
                 Parent = parent;
                 t = time;
 
                 Type = type;
+            }
+
+            public static Keyframe Build(string line, Recording p)
+            {
+                int a= 0, b = line.IndexOf("|");
+                string rtype = line.Substring(a, b - a);
+
+                a = b + 1;
+                b = line.IndexOf(";");
+                string rtime = line.Substring(a, b - a);
+                long time = long.Parse(rtime);
+
+                KFType type = (KFType)Enum.Parse(typeof(KFType), rtype);
+                switch (type)
+                {
+                    case KFType.MOUSE:
+                        return new KeyframeM(line, time, p);
+                    default:
+                        return new KeyframeK(line, time, p);
+                }
             }
 
 
@@ -84,16 +106,15 @@ namespace Recordings
 
             public abstract void Step(float x, Robot r);
 
-            #region need fixing
-
-            //public virtual bool HandlesKeys() { return false; }
-            //public virtual KeyActions GetKeyAction() { return KeyActions.NONE; }
-            //public virtual Key GetKey() { return Key.None; }
-
-            //public virtual MouseAction GetMouseAction() { return MouseAction.NONE; }
-            //public virtual int[] GetLocation() { return new int[] { -1, -1 }; }
-
-            #endregion
+            public override string ToString()
+            {
+                return new StringBuilder()
+                    .Append(Type)
+                    .Append("|")
+                    .Append(GetTime())
+                    .Append(";")
+                    .ToString();
+            }
         }
 
         public class KeyframeK : Keyframe
@@ -112,6 +133,22 @@ namespace Recordings
                 DoAction = (r) => { r.DoAction(ka, k); };
                 //Info = k.ToString();
                 //Description = isDown ? "DOWN" : "UP";
+            }
+
+            internal KeyframeK(string line, long t, Recording p)
+                : base(t, p, KFType.KEY)
+            {
+                Key k;
+                int a = line.IndexOf("(") + 1, b = line.IndexOf(",", a);
+                k = (Key)Enum.Parse(typeof(Key), line.Substring(a, b - a));
+
+                KeyActions ka;
+                a = b + 1; b = line.IndexOf(")", a);
+                ka = (KeyActions)Enum.Parse(typeof(KeyActions), line.Substring(a, b - a));
+
+                this.k = k;
+                this.ka = ka;
+                DoAction = (r) => { r.DoAction(ka, k); };
             }
 
             public void OnUpdateKA(Action<KeyActions> cb) { updateKA = cb; }
@@ -140,16 +177,14 @@ namespace Recordings
                 return k;
             }
 
-
             public override string ToString()
             {
-                return new StringBuilder()
+                return new StringBuilder(base.ToString())
+                    .Append("(")
                     .Append(k.ToString())
-                    .Append(" ")
-                    .Append("|")
-                    .Append("KEY ")
+                    .Append(", ")
                     .Append(ka.ToString())
-                    .Append(GetTime())
+                    .Append(")")
                     .ToString();
             }
 
@@ -168,15 +203,8 @@ namespace Recordings
             private MouseAction[] actions;
             private int currentAction;
 
-            internal KeyframeM(MouseAction a, int x, int y, long timestamp, Recording parent)
-                : base(timestamp, parent, KFType.MOUSE)
+            private void init()
             {
-                this.x = x;
-                this.y = y;
-                this.ma = a;
-
-                DoAction = (r) => r.DoAction(ma, x, y);
-
                 actions = (MouseAction[])Enum.GetValues(typeof(MouseAction));
                 for (int i = 0; i < actions.Length; i++)
                 {
@@ -186,6 +214,41 @@ namespace Recordings
                         break;
                     }
                 }
+
+            }
+
+            internal KeyframeM(MouseAction a, int x, int y, long timestamp, Recording parent)
+                : base(timestamp, parent, KFType.MOUSE)
+            {
+                this.x = x;
+                this.y = y;
+                this.ma = a;
+
+                DoAction = (r) => r.DoAction(ma, x, y);
+
+                init();
+            }
+
+            internal KeyframeM(string line, long t, Recording p)
+                : base(t, p, KFType.MOUSE)
+            {
+                MouseAction ma;
+                int a = line.IndexOf(",") + 1, b = line.IndexOf("(", a);
+                ma = (MouseAction)Enum.Parse(typeof(MouseAction), line.Substring(a, b - a));
+
+                int x, y;
+                a = b + 1; b = line.IndexOf(",", a);
+                x = int.Parse(line.Substring(a, b - a));
+                a = b + 1; b = line.IndexOf(")", a);
+                y = int.Parse(line.Substring(a, b - a));
+
+                this.x = x;
+                this.y = y;
+                this.ma = ma;
+
+                DoAction = (r) => r.DoAction(ma, x, y);
+
+                init();
             }
 
             public void OnUpdateLoc(Action<int, int> cb) { updateLoc = cb; }
@@ -240,15 +303,14 @@ namespace Recordings
 
             public override string ToString()
             {
-                return new StringBuilder()
+                return new StringBuilder(base.ToString())
+                    .Append(",")
                     .Append(ma.ToString())
-                    .Append("|")
-                    .Append("MOUSE: ")
+                    .Append("(")
                     .Append(x)
                     .Append(", ")
                     .Append(y)
-                    .Append(" ")
-                    .Append(GetTime())
+                    .Append(")")
                     .ToString();
             }
         }
@@ -261,6 +323,18 @@ namespace Recordings
         public Recording()
         {
             Keyframes = new HashedLinkedList<Keyframe>();
+        }
+
+        public Recording(StreamReader sr) : this()
+        {
+           var t = sr.ReadLine(); // start
+            string line = sr.ReadLine();
+            while(!line.Equals(END))
+            {
+                Keyframe k = Keyframe.Build(line, this);
+                Keyframes.AddLast(k);
+                line = sr.ReadLine();
+            }
         }
 
         public void Divert()
@@ -470,7 +544,7 @@ namespace Recordings
                 {
                     long startT = Time.Millis();
                     long playT = startT;
-                    //Console.WriteLine(Keyframes.Count());
+                    //Console.WriteLine(Keyframes.Count);
                     LinkedListNode<Keyframe> node = Keyframes.First;
                     while (node != null)
                     {
@@ -522,17 +596,22 @@ namespace Recordings
             }
         }
 
+
+        private const string EMPTY = "<<EMPTY RECORDING>>";
+        private const string START = "<<Recording>>";
+        private const string END = "<</Recording>>";
         public override string ToString()
         {
-            if (Keyframes.Count == 0) return "<<EMPTY RECORDING>>";
+            if (Keyframes.Count == 0) return EMPTY;
 
-            StringBuilder s = new StringBuilder();
+            StringBuilder s = new StringBuilder(START+"\n");
             foreach (Keyframe k in Keyframes)
             {
                 s.Append(k.ToString()).Append("\n");
             }
             
             s.Remove(s.Length - 1, 1);
+            s.Append("\n"+END);
             return s.ToString();
         }
     }
