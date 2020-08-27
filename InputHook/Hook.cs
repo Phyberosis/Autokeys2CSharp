@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows.Input;
 using Data;
 
 namespace InputHook
@@ -20,7 +20,7 @@ namespace InputHook
         // keyboard
         private LowLevelProc _kproc;
         private static IntPtr _khookID = IntPtr.Zero;
-        public delegate void OnKeyDelegate(Keys k);
+        public delegate void OnKeyDelegate(Key k);
         private LinkedList<OnKeyDelegate> onKeyUp;
         private LinkedList<OnKeyDelegate> onKeyDn;
 
@@ -119,26 +119,25 @@ namespace InputHook
 
         private IntPtr kHookReception(int nCode, IntPtr wParam, IntPtr lParam)
         {
+            Key k = KeyInterop.KeyFromVirtualKey((int)Marshal.ReadInt32(lParam));
             Task.Delay(0).ContinueWith((t) =>
             {
                 lock (this)
                 {
                     if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN)
                     {
-                        int vkCode = Marshal.ReadInt32(lParam);
                         foreach (var fn in onKeyDn)
                         {
-                            fn((Keys)vkCode);
+                            fn(k);
                         }
                         //Console.WriteLine((Keys)vkCode);
                         //MessageBox.Show(((Keys)vkCode).ToString());
                     }
                     else if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
                     {
-                        int vkCode = Marshal.ReadInt32(lParam);
                         foreach (var fn in onKeyUp)
                         {
-                            fn((Keys)vkCode);
+                            fn(k);
                         }
                     }
                 }
@@ -189,6 +188,17 @@ namespace InputHook
             }
         }
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool GetCursorPos(ref Win32Point pt);
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct Win32Point
+        {
+            public Int32 X;
+            public Int32 Y;
+        };
+
         //private int lx = 0, ly = 0;
         private IntPtr mHookReception(int nCode, IntPtr wParam, IntPtr lParam)
         {
@@ -209,8 +219,10 @@ namespace InputHook
                         //lx = x; ly = y;
                         if (x == 0 && y == 0)
                         {
-                            x = Cursor.Position.X;
-                            y = Cursor.Position.Y;
+                            Win32Point p = new Win32Point();
+                            GetCursorPos(ref p);
+                            x = p.X;
+                            y = p.Y;
                         }
 
                         foreach (var fn in onMouse)

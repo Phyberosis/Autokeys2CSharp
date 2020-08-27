@@ -76,6 +76,7 @@ namespace Data
             else
             {
                 last.Next = v;
+                v.Previous = last;
                 last = v;
             }
         }

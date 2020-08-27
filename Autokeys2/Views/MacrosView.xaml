@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Autokeys2.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="500"
+             mc:Ignorable="d"
              Name="brdLeft">
 
     <UserControl.Resources>
@@ -81,13 +80,13 @@
     </UserControl.Resources>
 
     <Border Style="{StaticResource leftBorder}" Padding="10" MouseDown="traysLostFocus">
-        <Grid>
+        <Grid MinHeight="200">
             <Grid.ColumnDefinitions>
                 <!--<ColumnDefinition Width="200" MinWidth="100" MaxWidth="400"/>
                 <ColumnDefinition Width="5"/>-->
-                <ColumnDefinition />
-                <!--<ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="200" MinWidth="100" MaxWidth="400"/>-->
+                <ColumnDefinition MinWidth="300" Width="500"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <!--<Border Grid.Column="0" Style="{StaticResource leftBorder}" Background="Transparent">
@@ -109,7 +108,7 @@
 
             <GridSplitter Grid.Column="1" Style="{StaticResource splitter}"/>-->
 
-            <DockPanel>
+            <DockPanel Grid.Column="0">
                 <DockPanel DockPanel.Dock="Top" Height="30">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                         <Button x:Name="btnSave" Content="Save"
@@ -143,12 +142,28 @@
                 </DockPanel>
             </DockPanel>
 
-            <!--<GridSplitter Grid.Column="3" Style="{StaticResource splitter}"/>
+            <GridSplitter Grid.Column="1" Style="{StaticResource splitter}" IsEnabled="False"/>
 
-            <Border Grid.Column="4" Style="{StaticResource leftBorder}" Background="Transparent" >
-                <StackPanel Name="buttonStack">
-                </StackPanel>
-            </Border>-->
+            <DockPanel Grid.Column="2" Margin="12, 70, 0, 0" Width="120" Height="180" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Button x:Name="btnUp" Content="Move&#10;Up" Grid.Column="0" Grid.Row="0" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnDn" Content="Move&#10;Down" Grid.Column="0" Grid.Row="1" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnAddM" Content="Add&#10;Mouse" Grid.Column="1" Grid.Row="0" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnAddK" Content="Add&#10;Key" Grid.Column="1" Grid.Row="1" Style="{StaticResource trayUtilButton}" Click="Util_Click"/>
+                    <Button x:Name="btnDel" Content="Delete" Grid.Column="1" Grid.Row="2" Style="{StaticResource trayUtilButton}" Click="Util_Click">
+                    </Button>
+                </Grid>
+            </DockPanel>
         </Grid>
     </Border>
 </UserControl>

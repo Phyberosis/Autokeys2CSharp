@@ -36,6 +36,16 @@
           "bin/placeholder/Data.dll": {}
         }
       },
+      "Events/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "compile": {
+          "bin/placeholder/Events.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Events.dll": {}
+        }
+      },
       "WindowsInput/1.0.0": {
         "type": "project",
         "compile": {
@@ -196,6 +206,11 @@
       "path": "../Data/Data.csproj",
       "msbuildProject": "../Data/Data.csproj"
     },
+    "Events/1.0.0": {
+      "type": "project",
+      "path": "../Events/Events.csproj",
+      "msbuildProject": "../Events/Events.csproj"
+    },
     "WindowsInput/1.0.0": {
       "type": "project",
       "path": "../external/WindowsInput/WindowsInput.csproj",
@@ -205,6 +220,7 @@
   "projectFileDependencyGroups": {
     ".NETStandard,Version=v2.0": [
       "Data >= 1.0.0",
+      "Events >= 1.0.0",
       "NETStandard.Library >= 2.0.3",
       "WindowsInput >= 1.0.0"
     ]
@@ -237,6 +253,9 @@
           "projectReferences": {
             "C:\\workspace\\CSharp\\Autokeys2\\Data\\Data.csproj": {
               "projectPath": "C:\\workspace\\CSharp\\Autokeys2\\Data\\Data.csproj"
+            },
+            "C:\\workspace\\CSharp\\Autokeys2\\Events\\Events.csproj": {
+              "projectPath": "C:\\workspace\\CSharp\\Autokeys2\\Events\\Events.csproj"
             },
             "C:\\workspace\\CSharp\\Autokeys2\\external\\WindowsInput\\WindowsInput.csproj": {
               "projectPath": "C:\\workspace\\CSharp\\Autokeys2\\external\\WindowsInput\\WindowsInput.csproj"

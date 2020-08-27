@@ -59,11 +59,26 @@
           "bin/placeholder/InputHook.dll": {}
         }
       },
+      "Monitors/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Events": "1.0.0",
+          "InputHook": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Monitors.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Monitors.dll": {}
+        }
+      },
       "OutputSimulator/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
           "Data": "1.0.0",
+          "Events": "1.0.0",
           "WindowsInput": "1.0.0"
         },
         "compile": {
@@ -243,6 +258,11 @@
       "path": "../InputHook/InputHook.csproj",
       "msbuildProject": "../InputHook/InputHook.csproj"
     },
+    "Monitors/1.0.0": {
+      "type": "project",
+      "path": "../Monitors/Monitors.csproj",
+      "msbuildProject": "../Monitors/Monitors.csproj"
+    },
     "OutputSimulator/1.0.0": {
       "type": "project",
       "path": "../OutputSimulator/OutputSimulator.csproj",
@@ -259,6 +279,7 @@
       "Data >= 1.0.0",
       "Events >= 1.0.0",
       "InputHook >= 1.0.0",
+      "Monitors >= 1.0.0",
       "NETStandard.Library >= 2.0.3",
       "OutputSimulator >= 1.0.0"
     ]
@@ -297,6 +318,9 @@
             },
             "C:\\workspace\\CSharp\\Autokeys2\\InputHook\\InputHook.csproj": {
               "projectPath": "C:\\workspace\\CSharp\\Autokeys2\\InputHook\\InputHook.csproj"
+            },
+            "C:\\workspace\\CSharp\\Autokeys2\\Monitors\\Monitors.csproj": {
+              "projectPath": "C:\\workspace\\CSharp\\Autokeys2\\Monitors\\Monitors.csproj"
             },
             "C:\\workspace\\CSharp\\Autokeys2\\OutputSimulator\\OutputSimulator.csproj": {
               "projectPath": "C:\\workspace\\CSharp\\Autokeys2\\OutputSimulator\\OutputSimulator.csproj"

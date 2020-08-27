@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Autokeys2.Resources"
                     xmlns:System="clr-namespace:System;assembly=mscorlib">
+
+    <Color x:Key="grey0">#FF474747</Color>
     
     <Style x:Key="searchBox" TargetType="TextBox">
         <Setter Property="CaretBrush">
@@ -114,5 +116,27 @@
     <Style x:Key="separator" TargetType="Label">
         <Setter Property="Background" Value="#FF7ED3FB"/>
         <Setter Property="Width" Value="2"/>
+    </Style>
+
+    <Style x:Key="trayUtilButton" TargetType="Button" BasedOn="{StaticResource myButton}">
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="IsEnabled" Value="False"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <SolidColorBrush Color="{StaticResource grey0}"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="White"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <SolidColorBrush Color="{StaticResource blue0}"/>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Foreground" Value="Black"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

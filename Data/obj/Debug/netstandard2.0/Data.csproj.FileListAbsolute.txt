@@ -1,6 +1,7 @@
 C:\workspace\CSharp\Autokeys2\Data\bin\Debug\netstandard2.0\Data.deps.json
 C:\workspace\CSharp\Autokeys2\Data\bin\Debug\netstandard2.0\Data.dll
 C:\workspace\CSharp\Autokeys2\Data\bin\Debug\netstandard2.0\Data.pdb
+C:\workspace\CSharp\Autokeys2\Data\obj\Debug\netstandard2.0\Data.csprojAssemblyReference.cache
 C:\workspace\CSharp\Autokeys2\Data\obj\Debug\netstandard2.0\Data.AssemblyInfoInputs.cache
 C:\workspace\CSharp\Autokeys2\Data\obj\Debug\netstandard2.0\Data.AssemblyInfo.cs
 C:\workspace\CSharp\Autokeys2\Data\obj\Debug\netstandard2.0\Data.csproj.CoreCompileInputs.cache

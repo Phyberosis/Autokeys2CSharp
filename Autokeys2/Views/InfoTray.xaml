@@ -5,39 +5,51 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Autokeys2.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="400"
-             Margin="0, 0, 5, 5">
+             d:DesignHeight="25" d:DesignWidth="400"
+             Focusable="True"
+             Margin="0, 0, 5, 5"
+             FocusVisualStyle="{x:Null}">
 
     <Border x:Name="brdAll" Style="{StaticResource mainBorder}"
-            Background="Transparent" BorderThickness="1"
+            Background="Black" BorderThickness="1"
             BorderBrush="Transparent">
         <DockPanel>
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="2"/>
                     <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="2"/>
                     <ColumnDefinition/>
+                    <ColumnDefinition MaxWidth="30"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TextBox x:Name="txtTime"
                          Style="{StaticResource keyframeTextBox}" Text="{Binding Time}"
-                         GotFocus="txtTime_GotFocus"/>
-                <Label Grid.Column="1" Style="{StaticResource separator}"/>
-                <Border x:Name="brdInfo" Grid.Column="2" Style="{StaticResource highlightBorder}">
+                         GotFocus="txtTime_GotFocus" Grid.RowSpan="2" KeyDown="txtTime_KeyDown"/>
+                <Label Grid.Column="1" Style="{StaticResource separator}" Grid.RowSpan="2"/>
+                <Border x:Name="brdInfo" Grid.Column="2" Style="{StaticResource highlightBorder}" Grid.RowSpan="2">
                     <TextBlock x:Name="txtInfo"
                                Style="{StaticResource keyframeBlock}" Text="{Binding Info}"
                                IsMouseDirectlyOverChanged="txtInfo_IsMouseDirectlyOverChanged"
                                MouseDown="txtInfo_MouseDown" KeyDown="txtInfo_KeyDown"/>
                 </Border>
-                <Label Grid.Column="3" Style="{StaticResource separator}"/>
-                <Border x:Name="brdDesc" Grid.Column="4" Style="{StaticResource highlightBorder}">
+                <Label Grid.Column="3" Style="{StaticResource separator}" Grid.RowSpan="2"/>
+                <Border x:Name="brdDesc" Grid.Column="4" Style="{StaticResource highlightBorder}" Grid.RowSpan="2">
                     <TextBlock x:Name="txtDescription" 
                                Style="{StaticResource keyframeBlock}" Text="{Binding Description}"
                                IsMouseDirectlyOverChanged="txtDescription_IsMouseDirectlyOverChanged"
                                MouseDown="txtDescription_MouseDown"/>
                 </Border>
+                <Border Name="traySelect" Grid.Column="5" 
+                        CornerRadius="5" BorderThickness="2" Background="LightGray"
+                        IsMouseDirectlyOverChanged="traySelect_IsMouseDirectlyOverChanged"
+                        MouseDown="traySelect_MouseDown" Grid.RowSpan="2">
+                </Border>
+
                 <!--<TextBlock x:Name="txtInfo" Style="{StaticResource clearTextBlock}" Text="Asd"/>
                 <Label Grid.Column="1" Background="#FF7ED3FB" Width="2"/>
                 <TextBlock Grid.Column="2" x:Name="txtDescription" Style="{StaticResource clearTextBlock}" Text="12, 12"/>-->

@@ -54,7 +54,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -73,7 +72,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="InputHandler.cs" />
+    <Compile Include="x - InputHandler.cs" />
     <Compile Include="Resources\MacrosLibrary.xaml.cs">
       <DependentUpon>MacrosLibrary.xaml</DependentUpon>
     </Compile>
@@ -186,6 +185,10 @@
     <ProjectReference Include="..\InputHook\InputHook.csproj">
       <Project>{1e64456d-1a2c-48d4-8e3f-bc1fd6a36e52}</Project>
       <Name>InputHook</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Monitors\Monitors.csproj">
+      <Project>{E706DCF7-58B6-4E9B-8F62-E46565669AF8}</Project>
+      <Name>Monitors</Name>
     </ProjectReference>
     <ProjectReference Include="..\OutputSimulator\OutputSimulator.csproj">
       <Project>{fef1ccd4-9298-420f-b1f6-e9ee77c16fe5}</Project>

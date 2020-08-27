@@ -18,6 +18,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -32,7 +33,7 @@ namespace Autokeys2.Views
 
         private readonly Color BLUE;
 
-        public readonly KeyFrameModel Model;
+        public readonly KeyframeModel Model;
 
         private Action lostFocusChild;
         private object focused = null;
@@ -43,14 +44,14 @@ namespace Autokeys2.Views
 
         private EventHandle<Overlay.OnMouseLocationSelected> selectMouseLocationHandle;
 
-        public InfoTray(OpenLinkedListNode<Recording.KeyFrame> node,
-            KeyFrameModel prev, RecordingModel.FocusContainer focusedTray)
+        public InfoTray(OpenLinkedListNode<Recording.Keyframe> node,
+            KeyframeModel prev, RecordingModel.FocusContainer focusedTray)
         {
             InitializeComponent();
             BLUE = (Color)FindResource("blue0");
             trayFocusContainer = focusedTray;
 
-            Model = new KeyFrameModel(node, this);
+            Model = new KeyframeModel(node, this);
             Model.Prev = prev;
             if(prev!=null)prev.Next = Model;
             this.DataContext = Model;
@@ -72,28 +73,31 @@ namespace Autokeys2.Views
 
         private void focusChangedTray()
         {
+            if (trayFocused) return;
             trayFocused = true;
 
             var f = trayFocusContainer;
             f.FocusChanged();
-
             f.Focused = this;
-            brdAll.BorderBrush = new SolidColorBrush(BLUE);
 
+            traySelect.Background = new SolidColorBrush(BLUE);
+            brdAll.BorderBrush = new SolidColorBrush(BLUE);
+            //Console.WriteLine("0");
             f.FocusChanged = () =>
             {
+                //Console.WriteLine("2");
                 focusChangedChild(null);
                 lostFocusChild = () => { };
                 brdAll.BorderBrush = new SolidColorBrush(Colors.Transparent);
+                traySelect.Background = new SolidColorBrush(Colors.LightGray);
                 trayFocused = false;
             };
+            //Console.WriteLine("1");
         }
 
         private bool focusChangedChild(object txt)
         {
             if (focused != null && focused.Equals(txt)) return false;
-
-            if (!trayFocused) focusChangedTray();
 
             lostFocusChild();
             focused = txt;
@@ -125,18 +129,14 @@ namespace Autokeys2.Views
                 if (!float.TryParse(txtTime.Text, out rawNow) && rawNow >= 0)
                 {
                     Model.SetTime(prev);
-                    return;
                 }
-
-                long now = (long)Math.Round(rawNow * 1000);
-                long diff = now - prev;
-                var curr = Model;
-                while(curr != null)
+                else
                 {
-                    curr.SlideTime(diff);
-                    curr = curr.Next;
+                    Model.SetTime((long)Math.Round(rawNow * 1000));
                 }
             };
+
+            focusChangedTray();
         }
 
         private void txtInfo_MouseDown(object sender, MouseButtonEventArgs e)
@@ -161,6 +161,10 @@ namespace Autokeys2.Views
                 bool forward = e.LeftButton == MouseButtonState.Pressed;
                 Model.CycleMouseInfo(forward);
             }
+
+            Focus();
+            focusChangedTray();
+            e.Handled = true;
         }
 
         private void txtDescription_MouseDown(object sender, MouseButtonEventArgs e)
@@ -173,15 +177,42 @@ namespace Autokeys2.Views
             }
             else
             {
-                Overlay.OnMouseLocationSelected callback = (x, y) =>
+                brdDesc.BorderBrush = new SolidColorBrush(Colors.Red);
+                txtDescription.Foreground = new SolidColorBrush(Colors.Orange);
+                string old = txtDescription.Text;
+                txtDescription.Text = "<select new mouse position>";
+                Overlay.OnMouseLocationSelected callback = (x, y, c) =>
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        Model.UpdateDesc(x, y);
+                        brdDesc.BorderBrush = new SolidColorBrush(Colors.Transparent);
+                        txtDescription.Foreground = new SolidColorBrush(Colors.White);
+                        if(c)
+                        {
+                            txtDescription.Text = old;
+                        }
+                        else
+                        {
+                            Model.UpdateDesc(x, y);
+                        }
                     });
                 };
                 selectMouseLocationHandle.Notify(callback);
             }
+
+            Focus();
+            focusChangedTray();
+            e.Handled = true;
+        }
+
+        private void traySelect_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (focusChangedChild(traySelect)) lostFocusChild = () =>
+            { };
+
+            this.Focus();
+            focusChangedTray();
+            e.Handled = true;
         }
 
         private void txtInfo_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -200,6 +231,12 @@ namespace Autokeys2.Views
             brdDesc.BorderBrush = new SolidColorBrush(c);
         }
 
+        private void traySelect_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Color c = ((bool)e.NewValue) ? BLUE : Colors.Transparent;
+            traySelect.BorderBrush = new SolidColorBrush(c);
+        }
+
         private void txtInfo_KeyDown(object sender, KeyEventArgs e)
         {
             if (!Model.HandlesKeys()) return;
@@ -209,19 +246,28 @@ namespace Autokeys2.Views
             proposedKey = e.Key;
         }
 
+        private void txtTime_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                focusChangedChild(null);
+                Focus();
+            }
+        }
+
         //public InfoTray(string info, string description)
         //{
         //    InitializeComponent();
         //}
     }
 
-    public class KeyFrameModel
+    public class KeyframeModel
     {
         private string info, desc, time;
         private struct State
         {
             public string Info, Desc, Time;
-            public State(KeyFrameModel state)
+            public State(KeyframeModel state)
             {
                 Info = state.info;
                 Desc = state.desc;
@@ -267,14 +313,14 @@ namespace Autokeys2.Views
             }
         }
 
-        public KeyFrameModel Next, Prev;
-        public OpenLinkedListNode<Recording.KeyFrame> DataNode;
+        public KeyframeModel Next, Prev;
+        public OpenLinkedListNode<Recording.Keyframe> DataNode;
         private InfoTray ui;
 
         private MouseAction[] actions;
         private int currentAction;
 
-        public KeyFrameModel(OpenLinkedListNode<Recording.KeyFrame> node,
+        public KeyframeModel(OpenLinkedListNode<Recording.Keyframe> node,
             InfoTray ui)
         {
             DataNode = node;
@@ -307,9 +353,27 @@ namespace Autokeys2.Views
             Time = convertTime(DataNode.Value.GetTime());
         }
 
-        public void SetTime(long t)
+        public void SetTime(long now)
         {
-            Time = convertTime(t);
+            now = now < 0 ? 0 : now;
+            if(Prev != null)
+            {
+                var pt = Prev.DataNode.Value.GetTime();
+                if (now < pt)
+                    now = pt;
+            }
+
+            long diff = now - DataNode.Value.GetTime();
+            var curr = Next;
+            while (curr != null)
+            {
+                curr.SlideTime(diff);
+                //Console.WriteLine(curr.DataNode.Value.GetTime());
+                curr = curr.Next;
+            }
+
+            DataNode.Value.SetTime(now);
+            Time = convertTime(now);
         }
 
         public void SaveState()
@@ -327,8 +391,7 @@ namespace Autokeys2.Views
         public void UpdateInfo(Key k)
         {
             var kf = DataNode.Value;
-            var formsKey = (System.Windows.Forms.Keys)KeyInterop.VirtualKeyFromKey(k);
-            var newKF = new Recording.KeyFrameK(kf.GetKeyAction(), formsKey, kf.GetTime());
+            var newKF = new Recording.KeyFrameK(kf.GetKeyAction(), k, kf.GetTime());
             DataNode.Value = newKF;
         }
 

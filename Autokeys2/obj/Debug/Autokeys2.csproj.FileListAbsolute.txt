@@ -104,6 +104,7 @@ C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\FluentWPF.dll
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\InputHook.dll
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\MaterialDesignColors.dll
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\MaterialDesignThemes.Wpf.dll
+C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\Monitors.dll
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\OutputSimulator.dll
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\Recordings.dll
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\WindowsInput.dll
@@ -112,6 +113,7 @@ C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\Events.pdb
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\WindowsInput.pdb
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\WindowsInput.xml
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\InputHook.pdb
+C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\Monitors.pdb
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\OutputSimulator.pdb
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\Recordings.pdb
 C:\workspace\CSharp\Autokeys2\Autokeys2\bin\Debug\MaterialDesignColors.pdb

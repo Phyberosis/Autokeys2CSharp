@@ -1,28 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows.Input;
 using System.Xml;
 using Data;
 using InputHook;
+using Monitors;
 using OutputSimulator;
 
 namespace Recordings
 {
     public class Recording
     {
-        public abstract class KeyFrame
+        public abstract class Keyframe
         {
             private long t;
             public delegate void DoActionDelegate(Robot r);
             public DoActionDelegate DoAction;
+            internal LinkedListNode<Keyframe> Container;
 
-            public KeyFrame(long time)
+            public Keyframe(long time, LinkedListNode<Keyframe> container)
             {
+                Container = container;
                 t = time;
             }
 
@@ -31,6 +35,11 @@ namespace Recordings
             public void SlideTime(long delta)
             {
                 t += delta;
+            }
+
+            public void SetTime(long time)
+            {
+                t = time;
             }
 
             public abstract string GetInfo();
@@ -45,19 +54,19 @@ namespace Recordings
 
             public virtual bool HandlesKeys() { return false; }
             public virtual KeyActions GetKeyAction() { return KeyActions.NONE; }
-            public virtual Keys GetKey() { return Keys.None; }
+            public virtual Key GetKey() { return Key.None; }
 
             public virtual MouseAction GetMouseAction() { return MouseAction.NONE; }
             public virtual int[] GetLocation() { return new int[] { -1, -1 }; }
             #endregion
         }
 
-        public class KeyFrameK : KeyFrame
+        public class KeyFrameK : Keyframe
         {
             private KeyActions ka;
-            private Keys k;
+            private Key k;
 
-            public KeyFrameK(KeyActions ka, Keys k, long timestamp) : base(timestamp)
+            internal KeyFrameK(KeyActions ka, Key k, long timestamp, LinkedListNode<Keyframe> container) : base(timestamp, container)
             {
                 this.k = k;
                 this.ka = ka;
@@ -79,7 +88,7 @@ namespace Recordings
                 return ka.ToString();
             }
 
-            public override Keys GetKey()
+            public override Key GetKey()
             {
                return k;
             }
@@ -101,12 +110,12 @@ namespace Recordings
             }
         }
 
-        public class KeyFrameM : KeyFrame
+        public class KeyFrameM : Keyframe
         {
             private MouseAction ma;
             private int x, y;
 
-            public KeyFrameM(MouseAction a, int x, int y, long timestamp) : base(timestamp)
+            internal KeyFrameM(MouseAction a, int x, int y, long timestamp, LinkedListNode<Keyframe> container) : base(timestamp, container)
             {
                 this.x = x;
                 this.y = y;
@@ -120,7 +129,7 @@ namespace Recordings
 
             public override void Step(float x, Robot r)
             {
-                Point p = Cursor.Position;
+                Point p = CursorMonitor.Position();
                 float fx = -((x - 1) * (x - 1)) + 1;
                 float dx = this.x - p.X;
                 float dy = this.y - p.Y;
@@ -165,25 +174,25 @@ namespace Recordings
             }
         }
 
-        public OpenLinkedList<KeyFrame> Keyframes { get; set; }
+        public LinkedList<Keyframe> Keyframes { get; set; }
         private bool isPlaying = false;
-        private LinkedList<KeyFrame> buffer;
+        private LinkedList<Keyframe> buffer;
 
         public Recording()
         {
-            Keyframes = new OpenLinkedList<KeyFrame>();
+            Keyframes = new LinkedList<Keyframe>();
         }
 
         public void Divert()
         {
-            buffer = new LinkedList<KeyFrame>();
+            buffer = new LinkedList<Keyframe>();
         }
 
         public void Flush()
         {
             if (buffer == null) return;
 
-            foreach (KeyFrame k in buffer)
+            foreach (Keyframe k in buffer)
             {
                 Keyframes.AddLast(k);
             }
@@ -191,7 +200,7 @@ namespace Recordings
             buffer = null;
         }
 
-        public void AddKeyFrame(KeyFrame k)
+        public void AddKeyFrame(Keyframe k)
         {
             lock (this)
             {
@@ -209,42 +218,64 @@ namespace Recordings
             }
         }
 
-        public void Play(Robot r, Action onComplete)
+        public void ShiftKeyframe(Keyframe k, Keyframe toAfter)
+        {
+            Keyframes.Remove(k);
+            Keyframes.AddAfter(toAfter.Container, k);
+        }
+
+        public void InsertKeyframe(Keyframe k, Keyframe after)
+        {
+
+        }
+
+        public void DeleteKeyframe(Keyframe k)
+        {
+
+        }
+
+        public void Play(Robot r, Action onComplete, int repeats, float speed)
         {
             //Console.WriteLine("here");
             Thread t = new Thread(() =>
             {
-                long startT = Time.Millis();
-                long playT = startT;
-                //Console.WriteLine(Keyframes.Count());
-                OpenLinkedListNode<KeyFrame> node = Keyframes.First();
-                while(node != null)
+                repeats++;
+                while(repeats > 0)
                 {
-                    KeyFrame k = node.Value;
-
-                    lock (this)
+                    long startT = Time.Millis();
+                    long playT = startT;
+                    //Console.WriteLine(Keyframes.Count());
+                    LinkedListNode<Keyframe> node = Keyframes.First;
+                    while (node != null)
                     {
-                        if (!isPlaying) break;
+                        Keyframe k = node.Value;
+
+                        lock (this)
+                        {
+                            if (!isPlaying) break;
+                        }
+
+                        long currT = (long)((Time.Millis() - startT) * speed);
+
+                        long nextT = k.GetTime();
+                        if (currT < nextT)
+                        {
+                            long total = nextT - playT;
+                            long running = currT - playT;
+                            k.Step((float)running / (float)total, r);
+                            Thread.Sleep(16);
+                            continue;
+                        }
+                        else
+                        {
+                            playT = currT;
+                        }
+
+                        k.DoAction(r);
+                        node = node.Next;
                     }
 
-                    long currT = Time.Millis() - startT;
-
-                    long nextT = k.GetTime();
-                    if (currT < nextT)
-                    {
-                        long total = nextT - playT;
-                        long running = currT - playT;
-                        k.Step((float)running / (float)total, r);
-                        Thread.Sleep(16);
-                        continue;
-                    }
-                    else
-                    {
-                        playT = currT;
-                    }
-
-                    k.DoAction(r);
-                    node = node.Next;
+                    repeats--;
                 }
 
                 onComplete();
@@ -267,10 +298,10 @@ namespace Recordings
 
         public override string ToString()
         {
-            if (Keyframes.Count() == 0) return "<<EMPTY RECORDING>>";
+            if (Keyframes.Count == 0) return "<<EMPTY RECORDING>>";
 
             StringBuilder s = new StringBuilder();
-            foreach (KeyFrame k in Keyframes)
+            foreach (Keyframe k in Keyframes)
             {
                 s.Append(k.ToString()).Append("\n");
             }
