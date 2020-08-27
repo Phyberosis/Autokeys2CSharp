@@ -118,17 +118,14 @@ C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.csprojAssemblyRefe
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.exe.config
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Views\MacrosView.g.cs
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\MainWindow.g.cs
-C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Views\Trays\MacroItem.g.cs
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\App.g.cs
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\GeneratedInternalTypeHelper.g.cs
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2_MarkupCompile.cache
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2_MarkupCompile.lref
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\App.baml
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Resources\MainResources.baml
-C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Resources\MacrosTree.baml
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Views\MacrosView.baml
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\MainWindow.baml
-C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Views\Trays\MacroItem.baml
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.g.resources
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.Properties.Resources.resources
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.csproj.GenerateResource.cache
@@ -136,3 +133,9 @@ C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.csproj.CoreCompile
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.csproj.CopyComplete
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.exe
 C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Autokeys2.pdb
+C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Views\MacroTreeItem.g.cs
+C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Views\MacroTreeItem.baml
+C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Resources\MacrosLibrary.g.cs
+C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Resources\MacrosLibrary.baml
+C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Resources\MacrosTreeStyle.baml
+C:\workspace\CSharp\Autokeys2\Autokeys2\obj\Release\Resources\MainStyles.baml

@@ -37,7 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon %286%29.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentWPF, Version=0.8.0.6, Culture=neutral, processorArchitecture=MSIL">
@@ -54,7 +54,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -73,21 +72,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="InputHandler.cs" />
-    <Compile Include="ViewModels\ITreeViewViewModel.cs" />
-    <Compile Include="ViewModels\TestViewModel.cs" />
+    <Compile Include="x - InputHandler.cs" />
+    <Compile Include="Resources\MacrosLibrary.xaml.cs">
+      <DependentUpon>MacrosLibrary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InfoTray.xaml.cs">
+      <DependentUpon>InfoTray.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LibraryTree.cs" />
     <Compile Include="Views\MacrosView.xaml.cs">
       <DependentUpon>MacrosView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Titlebar.cs" />
-    <Compile Include="Views\Trays\MacroItem.xaml.cs">
-      <DependentUpon>MacroItem.xaml</DependentUpon>
+    <Compile Include="Views\MacroTreeItem.xaml.cs">
+      <DependentUpon>MacroTreeItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Overlay.xaml.cs">
+      <DependentUpon>Overlay.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Resources\MacrosLibrary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\MacrosViewStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\MainStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\MacrosTreeStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\MainResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\MacrosTree.xaml">
+    <Page Include="Views\InfoTray.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -107,7 +130,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Trays\MacroItem.xaml">
+    <Page Include="Views\MacroTreeItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Overlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -147,6 +174,10 @@
       <Project>{cbfe44b4-cfd8-4698-89c6-06d1faecda58}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Events\Events.csproj">
+      <Project>{8d6b9e01-0934-428e-874d-500a4327de36}</Project>
+      <Name>Events</Name>
+    </ProjectReference>
     <ProjectReference Include="..\external\WindowsInput\WindowsInput.csproj">
       <Project>{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}</Project>
       <Name>WindowsInput</Name>
@@ -154,6 +185,10 @@
     <ProjectReference Include="..\InputHook\InputHook.csproj">
       <Project>{1e64456d-1a2c-48d4-8e3f-bc1fd6a36e52}</Project>
       <Name>InputHook</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Monitors\Monitors.csproj">
+      <Project>{E706DCF7-58B6-4E9B-8F62-E46565669AF8}</Project>
+      <Name>Monitors</Name>
     </ProjectReference>
     <ProjectReference Include="..\OutputSimulator\OutputSimulator.csproj">
       <Project>{fef1ccd4-9298-420f-b1f6-e9ee77c16fe5}</Project>
@@ -163,6 +198,17 @@
       <Project>{113e78e8-fc53-4336-929f-64e39c6c4d80}</Project>
       <Name>Recordings</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Views\imgFolder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\imgFolder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.1.3\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.1.3\build\MaterialDesignThemes.targets')" />

@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using WindowsInput.Native;
 using WindowsInput;
 using OutputSimulator;
+using System.Windows.Input;
 
 namespace Tests
 {
@@ -47,8 +48,8 @@ namespace Tests
             });
 
             Thread.Sleep(w * 3);
-            m.LDown(x, y);
-            m.LUp(x, y);
+            m.DoAction(MouseAction.WM_LBUTTONDOWN, x, y);
+            m.DoAction(MouseAction.WM_LBUTTONUP, x, y);
             Thread.Sleep(w * 3);
             Assert.IsTrue(up && down);
         }
@@ -57,17 +58,17 @@ namespace Tests
         public void KeyX()
         {
             bool down = false, up = false;
-            Hook.I().AddKeyHook((Keys k) =>
+            Hook.I().AddKeyHook((Key k) =>
             {
-                if(k == Keys.X)
+                if(k == Key.X)
                 {
                     down = true;
                 }
 
                 Console.WriteLine("d");
-            }, (Keys k) =>
+            }, (Key k) =>
             {
-                if (k == Keys.X)
+                if (k == Key.X)
                 {
                     up = true;
                 }
@@ -81,10 +82,10 @@ namespace Tests
         }
 
         [TestMethod]
-        public void KeyShift()
+        public void Keyhift()
         {
             bool down = false, up = false;
-            Hook.I().AddKeyHook((Keys k) =>
+            Hook.I().AddKeyHook((Key k) =>
             {
                 if (k.ToString().Contains("Shift"))
                 {
@@ -92,7 +93,7 @@ namespace Tests
                 }
 
                 Console.WriteLine("d {0}", k.ToString());
-            }, (Keys k) =>
+            }, (Key k) =>
             {
                 if (k.ToString().Contains("Shift"))
                 {
@@ -113,9 +114,9 @@ namespace Tests
         public void keyCmdM()
         {
             bool ctrl = false, m = false;
-            Hook.I().AddKeyHook((Keys k) =>
+            Hook.I().AddKeyHook((Key k) =>
             {
-                if (k == Keys.M)
+                if (k == Key.M)
                 {
                     m = true;
                 }
@@ -124,7 +125,7 @@ namespace Tests
                 {
                     ctrl = true;
                 }
-            }, (Keys k) => { });
+            }, (Key k) => { });
 
             Thread.Sleep(w);
             ks.KeyDown(VirtualKeyCode.CONTROL);

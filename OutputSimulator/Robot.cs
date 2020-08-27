@@ -1,5 +1,6 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using Events;
+using System;
+using System.Windows.Input;
 using WindowsInput;
 using WindowsInput.Native;
 
@@ -8,16 +9,43 @@ namespace OutputSimulator
     public class Robot : VirtualMouse
     {
         private IKeyboardSimulator ks = new KeyboardSimulator(new InputSimulator());
+        private EventHandle<Key> handle;
 
-        public void KeyDown(Keys k)
+        public Robot() : base()
         {
-            //Console.WriteLine(((VirtualKeyCode)k).ToString());
-            ks.KeyDown((VirtualKeyCode)k);
+            handle = EventsBuiltin.RegisterEvent<Key>(EventID.KEY_SENT);
         }
 
-        public void KeyUp(Keys k)
+        public void DoAction(KeyActions ka, Key k)
         {
-            ks.KeyUp((VirtualKeyCode)k);
+            if (k == Key.None) return;
+
+            VirtualKeyCode code = (VirtualKeyCode)KeyInterop.VirtualKeyFromKey(k);
+            switch (ka)
+            {
+                case KeyActions.DOWN:
+                    ks.KeyDown(code);
+                    break;
+                case KeyActions.UP:
+                    ks.KeyUp(code);
+                    break;
+                case KeyActions.PRESS:
+                    ks.KeyDown(code);
+                    ks.KeyUp(code);
+                    break;
+            }
+        }
+
+        public void KeyDown(Key k)
+        {
+            //Console.WriteLine(((VirtualKeyCode)k).ToString());
+            ks.KeyDown((VirtualKeyCode)KeyInterop.VirtualKeyFromKey(k));
+            handle.Notify(k);
+        }
+
+        public void KeyUp(Key k)
+        {
+            ks.KeyUp((VirtualKeyCode)KeyInterop.VirtualKeyFromKey(k));
         }
     }
 }

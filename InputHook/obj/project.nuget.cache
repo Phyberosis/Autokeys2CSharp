@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "+Bk9D4kvuAi98BIbw7oTzyLbG75A/sJTn3lUDgMpQ5lZpPTuFp7LLs4qgEtOPWN4dV6JYGcnbLagSzi/MRDT5Q==",
+  "dgSpecHash": "JsMrrFApNiQ3nX57vH/FYWdJBw3AyzsLJy05QHLO1Xszhk6o808xE688GIUMxwCGLbgeTpxH3NEZBbLKmKh+6g==",
   "success": true,
   "projectFilePath": "C:\\workspace\\CSharp\\Autokeys2\\InputHook\\InputHook.csproj",
   "expectedPackageFiles": [
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+    "C:\\Users\\phybe\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\phybe\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
   ],
   "logs": []
 }

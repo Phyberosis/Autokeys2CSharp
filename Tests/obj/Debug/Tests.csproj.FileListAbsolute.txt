@@ -4,13 +4,14 @@ C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Microsoft.VisualStudio.TestPlatfor
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Tests.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Tests.pdb
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Data.dll
+C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Events.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\InputHook.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\OutputSimulator.dll
-C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\System.Numerics.Vectors.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\WindowsInput.dll
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Data.pdb
+C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\Events.pdb
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\WindowsInput.pdb
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\WindowsInput.xml
 C:\workspace\CSharp\Autokeys2\Tests\bin\Debug\InputHook.pdb
