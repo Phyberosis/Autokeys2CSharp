@@ -124,7 +124,8 @@ namespace Autokeys2.Views
         private void btnSave_MouseDown(object sender, MouseButtonEventArgs e)
         {
             traysLostFocusDelegate();
-            if (txtFileName.Text == null || txtFileName.Text == string.Empty)
+            var name = txtFileName.Text;
+            if (name == null || name  == string.Empty)
             {
                 Task.Delay(0).ContinueWith((t) => {
                     Dispatcher.Invoke(() => {
@@ -134,7 +135,8 @@ namespace Autokeys2.Views
                 return;
             }
 
-            model.FileName = txtFileName.Text;
+            if (name.EndsWith(".aks")) name = name.Substring(0, name.Length - 4);
+            model.FileName = name;
 
             var l = Librarian.I;
             SaveFileDialog dialog = new SaveFileDialog();
@@ -172,9 +174,11 @@ namespace Autokeys2.Views
                 var f = l.Load(dialog.SafeFileName, fs);
                 fs.Close();
 
-                recLoaded.Notify(f.Recording);
+                var rec = f.Recording;
+                data = rec;
+                recLoaded.Notify(rec);
                 model.FileName = f.FileName;
-                model.LoadRecording(f.Recording);
+                model.LoadRecording(rec);
                 MainWindow.SettingsModel.LoadSettings(f.Settings);
             }
         }
@@ -218,17 +222,20 @@ namespace Autokeys2.Views
                 model.Keyframes.Remove(tray);
                 model.Keyframes.Insert(i + 1, tray);
             }
-            else if (s.Equals(ADDM))
+            else if (s.Equals(ADDM) || s.Equals(ADDK))
             {
-                var nk = data.AddDefaultM(kf);
-                var i = tray != null ? model.Keyframes.IndexOf(tray) + 1 : 0;
-                model.Keyframes.Insert(i, InfoTray.BuildNew(nk, model.FocusedTray));
-            }
-            else if (s.Equals(ADDK))
-            {
-                var nk = data.AddDefaultK(kf);
-                var i = tray != null ? model.Keyframes.IndexOf(tray) + 1 : 0;
-                model.Keyframes.Insert(i, InfoTray.BuildNew(nk, model.FocusedTray));
+                Recording.Keyframe nk;
+                if (s.Equals(ADDM))
+                    nk = data.MakeDefaultM(kf);
+                else
+                    nk = data.MakeDefaultK(kf);
+                var i = tray != null ? model.Keyframes.IndexOf(tray) + 1 : model.Keyframes.Count;
+                var nt = InfoTray.BuildNew(nk, model.FocusedTray);
+
+                model.Keyframes.Insert(i, nt);
+                nt.SetAsFocusedTray();
+
+                //Console.WriteLine(model.Keyframes.Count);
             }
             else if (s.Equals(DEL))
             {
@@ -237,10 +244,10 @@ namespace Autokeys2.Views
                 {
                     var i = model.Keyframes.IndexOf(tray);
                     if (c == 2) i = i == 0 ? 1 : 0;
-                    else i = i == 0 ? 1 : i == c - 1 ? c - 2 : i - 1;
+                    else i = i == 0 ? 1 : i == c - 1 ? c - 2 : i + 1;
 
                     var t = model.Keyframes.ElementAt(i);
-                    t.FocusChangedTray();
+                    t.SetAsFocusedTray();
                 }
                 else
                 {
@@ -314,6 +321,7 @@ namespace Autokeys2.Views
         public void LoadRecording(Recording rec)
         {
             Keyframes.Clear();
+            FocusedTray = new FocusContainer(this);
             foreach (var kf in rec.Keyframes)
             {
                 var tray = InfoTray.BuildNew(kf, FocusedTray);

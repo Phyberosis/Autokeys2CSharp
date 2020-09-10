@@ -23,6 +23,10 @@ namespace Data
         {
             get { return list.First; }
         }
+        public LinkedListNode<T> Last
+        {
+            get { return list.Last; }
+        }
 
         public HashedLinkedList()
         {
@@ -62,8 +66,15 @@ namespace Data
 
         public void Remove(T val)
         {
-            list.Remove(val);
+            var n = hash[val];
+            list.Remove(n);
             hash.Remove(val);
+        }
+
+        public void Remove(LinkedListNode<T> n)
+        {
+            hash.Remove(n.Value);
+            list.Remove(n);
         }
 
         public IEnumerator<T> GetEnumerator()

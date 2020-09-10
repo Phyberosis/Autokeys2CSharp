@@ -1,6 +1,8 @@
 ﻿using Events;
+using InputHook;
 using Recordings;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -82,7 +84,7 @@ namespace Autokeys2.Views
             return keyframe;
         }
 
-        public void FocusChangedTray()
+        public void SetAsFocusedTray()
         {
             if (trayFocused) return;
             trayFocused = true;
@@ -147,20 +149,20 @@ namespace Autokeys2.Views
                 }
             };
 
-            FocusChangedTray();
+            SetAsFocusedTray();
         }
 
         public virtual void txtInfo_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Focus();
-            FocusChangedTray();
+            SetAsFocusedTray();
             e.Handled = true;
         }
 
         public virtual void txtDescription_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Focus();
-            FocusChangedTray();
+            SetAsFocusedTray();
             e.Handled = true;
         }
 
@@ -170,7 +172,7 @@ namespace Autokeys2.Views
             { };
 
             this.Focus();
-            FocusChangedTray();
+            SetAsFocusedTray();
             e.Handled = true;
         }
 
@@ -195,9 +197,6 @@ namespace Autokeys2.Views
             Color c = ((bool)e.NewValue) ? BLUE : Colors.Transparent;
             traySelect.BorderBrush = new SolidColorBrush(c);
         }
-
-        public virtual void txtInfo_KeyDown(object sender, KeyEventArgs e)
-        { }
 
         private void txtTime_KeyDown(object sender, KeyEventArgs e)
         {
@@ -267,13 +266,23 @@ namespace Autokeys2.Views
                             kfM.UpdateLocation(x, y);
                         }
                     });
+
+                    Task.Delay(10).ContinueWith((t) =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            MainWindow.Inst.Show();
+                            MainWindow.Inst.Topmost = true;
+                            MainWindow.Inst.Topmost = false;
+                        });
+                    });
                 };
                 Action<int, int> update = (x, y) =>
                 {
                     Dispatcher.Invoke(() => { txtDescription.Text = convertDescUpdate(x, y); });
                 };
                 selectMouseLocationHandle.Notify(new Overlay.Callbacks(callback, update));
-
+                MainWindow.Inst.Hide();
                 base.txtDescription_MouseDown(sender, e);
             }
 
@@ -315,32 +324,47 @@ namespace Autokeys2.Views
             public override void txtDescription_MouseDown(object sender, MouseButtonEventArgs e)
             {
                 kfK.CycleKeyActions();
-
+                focusChangedChild(null);
                 base.txtDescription_MouseDown(sender, e);
             }
 
             public override void txtInfo_MouseDown(object sender, MouseButtonEventArgs e)
             {
-                var prev = txtInfo.Text;
-                txtInfo.Text = "<new key>";
-                txtInfo.Foreground = new SolidColorBrush(Colors.Orange);
-
-                e.Handled = true;
-                if (focusChangedChild(txtInfo)) setFocusChild(txtInfo, brdInfo,
-                    () =>
+                if (focusChangedChild(txtInfo))
+                {
+                    e.Handled = true;
+                    //var prev = txtInfo.Text;
+                    //Model.Info = "<new key>";
+                    txtInfo.Foreground = new SolidColorBrush(Colors.Orange);
+                    Hook.OnKeyDelegate onD = (key) =>
                     {
-                        if (proposedKey == Key.None) txtInfo.Text = prev;
-                        else kfK.SetKey(proposedKey);
+                        Dispatcher.Invoke(() =>
+                        {
+                            txtInfo.Foreground = new SolidColorBrush(BLUE);
+                            Model.Info = key.ToString();
+                            proposedKey = key;
+                            //Console.WriteLine("!");
+                        });
+                    };
+                    Hook.OnKeyDelegate onU = (key) => { };
+                    Hook.I().AddKeyHook(onD, onU);
+
+                    setFocusChild(txtInfo, brdInfo, () =>
+                    {
+                        //Console.WriteLine("S");
+                        Hook.I().RemoveKeyHook(onD, onU).ContinueWith((t) =>
+                        {
+                            if (proposedKey == Key.None) return;
+                            //Console.WriteLine("S");
+                            Dispatcher.Invoke(() =>
+                            {
+                                kfK.SetKey(proposedKey);
+                            });
+                        });
                     });
+                }
 
                 base.txtInfo_MouseDown(sender, e);
-            }
-
-            public override void txtInfo_KeyDown(object sender, KeyEventArgs e)
-            {
-                txtInfo.Foreground = new SolidColorBrush(BLUE);
-                Model.Info = e.Key.ToString();
-                proposedKey = e.Key;
             }
         }
     }
@@ -398,7 +422,7 @@ namespace Autokeys2.Views
             }
         }
 
-        public KeyframeModel Next, Prev;
+        //public KeyframeModel Next, Prev;
         private InfoTray ui;
 
         //private MouseAction[] actions;

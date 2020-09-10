@@ -21,11 +21,22 @@ namespace FileHandler
         public string Path { get; private set; }
 
         private const string EXT = ".aks";
+        private const string PREFS = "Preferences\\settings.txt";
 
         private Librarian() 
         {
             Path = AppDomain.CurrentDomain.BaseDirectory+"Saves\\";
             Directory.CreateDirectory(Path);
+        }
+
+        public bool IsPrefsExist()
+        {
+            return File.Exists(Path + PREFS);
+        }
+
+        public void SavePrefs()
+        {
+            File.WriteAllText(Path + PREFS, "");
         }
 
         public string CompileName(string name)
@@ -44,7 +55,7 @@ namespace FileHandler
         public SaveData Load(string name, Stream fs)
         {
             var data = new SaveData();
-            name.Replace(".aks", "");
+            name = name.Replace(".aks", "");
             data.FileName = name;
 
             var sr = new StreamReader(fs);

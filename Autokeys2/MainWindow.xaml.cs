@@ -5,10 +5,9 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shell;
-using Monitors;
-using System.Windows.Media;
-using System.Windows.Controls;
 using Data;
+using FileHandler;
+using System.Threading.Tasks;
 
 namespace Autokeys2
 {
@@ -23,6 +22,7 @@ namespace Autokeys2
         private Overlay overlay;
 
         public static SettingsModel SettingsModel;
+        public static MainWindow Inst;
 
         public MainWindow()
         {
@@ -46,6 +46,18 @@ namespace Autokeys2
             //        Thread.Sleep(1000);
             //    };
             //});
+
+            Task.Delay(1000).ContinueWith((t) =>
+            {
+                Librarian l = Librarian.I;
+                if (!l.IsPrefsExist())
+                {
+                    l.SavePrefs();
+                    Dispatcher.Invoke(() => MessageBox.Show("Press Shift + Escape to end a recording.", "Info", MessageBoxButton.OK));
+                }
+            });
+
+            Inst = this;
         }
 
         private void onMouseDown(object sender, MouseButtonEventArgs e)
@@ -59,7 +71,7 @@ namespace Autokeys2
         {
             if (vewLeft.IsVisible)
             {
-                vewLeft.Visibility = Visibility.Collapsed;
+                vewLeft.Visibility = Visibility.Hidden;
                 btnExL.Content = "<";
             }
             else
@@ -69,31 +81,66 @@ namespace Autokeys2
             }
         }
 
+        private Action stopRecord = () => { };
         private void btnRecord_Click(object sender, RoutedEventArgs e)
         {
-            lock(this)
+            lock (this)
             {
-                if (isRecording) return;
-                isRecording = true;
-
-                btnRecord.Visibility = Visibility.Hidden;
-                taskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
-                WindowState = WindowState.Minimized;
-                recManager.RecordBegin();
-                Action reset = () =>
+                if (isRecording)
                 {
-                    recManager.RecordEnd();
-                    taskbarInfo.ProgressState = TaskbarItemProgressState.None;
-                    btnRecord.Visibility = Visibility.Visible;
-                    isRecording = false;
+                    stopRecord();
+                }
+                else
+                {
+                    //btnRecord.Visibility = Visibility.Hidden;
+                    taskbarInfo.ProgressState = TaskbarItemProgressState.Indeterminate;
+                    WindowState = WindowState.Minimized;
+                    recManager.RecordBegin();
 
-                    WindowState = WindowState.Normal;
-                    this.Activate();
+                    int shiftDown = 0;
+                    object syncLock = new object();
+                    Hook.OnKeyDelegate onU = (key) => {
+                        if (key == Key.LeftShift || key == Key.RightShift)
+                            lock (syncLock)
+                            {
+                                shiftDown--;
+                            }
+                    };
+                    Hook.OnKeyDelegate onD = (key) =>
+                    {
+                        lock (syncLock)
+                        {
+                            if (key == Key.LeftShift || key == Key.RightShift)
+                                shiftDown++;
+                            else if (key == Key.Escape && shiftDown > 0)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    stopRecord();
+                                });
+                            }
+                        }
+                    };
+                    Hook.I().AddKeyHook(onD, onU);
 
-                    this.Topmost = false;
-                    this.Topmost = true;
-                };
-                GestureMonitor.WaitForStopRec(() => { if (isRecording) this.Dispatcher.BeginInvoke(reset); });
+                    stopRecord = () =>
+                    {
+                        recManager.RecordEnd();
+                        taskbarInfo.ProgressState = TaskbarItemProgressState.None;
+                        btnRecord.Visibility = Visibility.Visible;
+                        isRecording = false;
+
+                        WindowState = WindowState.Normal;
+                        this.Activate();
+
+                        this.Topmost = false;
+                        this.Topmost = true;
+                        Hook.I().RemoveKeyHook(onD, onU);
+                        stopRecord = () => { };
+                    };
+                }
+
+                isRecording = !isRecording;
             }
         }
 

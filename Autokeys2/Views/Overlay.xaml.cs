@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -139,6 +140,8 @@ namespace Autokeys2.Views
             EventsBuiltin.RegisterListener<Callbacks>(EventID.SELECT_MOUSE_LOCATION, selectMouseLocation);
             EventsBuiltin.RegisterListener<MyColors>(EventID.BORDER_SHOW, show);
             EventsBuiltin.RegisterListener(EventID.BORDER_HIDE, (o)=> { hide(); });
+
+            hide();
         }
 
         private void show(MyColors c)
@@ -202,6 +205,8 @@ namespace Autokeys2.Views
         {
             show(MyColors.BLUE);
 
+            Action loop = null;
+
             object syncLock = new object();
             bool followMouse = true;
             Hook.OnMouseDelegate mouseDown = null;
@@ -217,10 +222,10 @@ namespace Autokeys2.Views
                 hide();
                 
                 System.Drawing.Point p = CursorMonitor.Position();
-                callback(p.X, p.Y);
-                Task.Delay(0).ContinueWith((t) =>
+                Hook.I().RemoveMouseHook(mouseDown).ContinueWith((t) =>
                 {
-                    Hook.I().RemoveMouseHook(mouseDown);
+                    loop = () => { };
+                    callback(p.X, p.Y);
                 });
             };
             Hook.I().AddMouseHook(mouseDown);
@@ -243,24 +248,29 @@ namespace Autokeys2.Views
                     Visibility = Visibility.Hidden;
                 });
 
-                callback(0, 0, true);
-
-                Task.Delay(0).ContinueWith((t) =>
+                Hook.I().RemoveKeyHook(keyD, keyU).ContinueWith((t) =>
                 {
-                    Hook.I().RemoveKeyHook(keyD, keyU);
-                    Hook.I().RemoveMouseHook(mouseDown);
+                    return Hook.I().RemoveMouseHook(mouseDown);
+                }).ContinueWith((t) =>
+                {
+                    callback(0, 0, true);
                 });
             };
             Hook.I().AddKeyHook(keyD, keyU);
 
-            Action loop = null;
+            TextBlock coords = new TextBlock();
+            coords.Foreground = new SolidColorBrush(Colors.Black);
+            coords.Background = new SolidColorBrush(Colors.White);
+            coords.Padding = new Thickness(4);
+
             loop = () =>
             {
                 Topmost = true;
 
                 canvas.Children.Clear();
                 System.Drawing.Point p = CursorMonitor.Position();
-
+                p.X = p.X == 0 ? 0 : p.X-2;
+                p.Y = p.Y == 0 ? 0 : p.Y-2;
                 update(p.X, p.Y);
 
                 Line h = new Line();
@@ -275,8 +285,17 @@ namespace Autokeys2.Views
                 v.X1 = p.X; v.X2 = p.X;
                 v.Y1 = 0; v.Y2 = H;
 
+                coords.Text = p.X + ", " + p.Y;
+                double fac = 15;
+                double coordX = W - p.X < coords.ActualWidth + fac ? W - (coords.ActualWidth + fac) : p.X + 4;
+                double coordY = p.Y < coords.ActualHeight + fac ? coords.ActualHeight + fac : p.Y;
+
+                Canvas.SetLeft(coords, coordX);
+                Canvas.SetBottom(coords, H - coordY);
+
                 canvas.Children.Add(h);
                 canvas.Children.Add(v);
+                canvas.Children.Add(coords);
 
                 //return;
                 lock (syncLock)
