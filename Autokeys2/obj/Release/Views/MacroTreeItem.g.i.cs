@@ -52,7 +52,7 @@ namespace Autokeys2.Views.Trays {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Autokeys2;component/views/macrotreeitem.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Autokeys;component/views/macrotreeitem.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\Views\MacroTreeItem.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

@@ -52,7 +52,7 @@ namespace Autokeys2.Resources {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Autokeys2;component/resources/macroslibrary.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Autokeys;component/resources/macroslibrary.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\Resources\MacrosLibrary.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

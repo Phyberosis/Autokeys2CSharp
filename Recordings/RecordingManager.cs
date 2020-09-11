@@ -69,7 +69,7 @@ namespace Recordings
             EventsBuiltin.RegisterListener<Recording>(EventID.REC_LOADED, (r) =>
             {
                 rec = r;
-                Console.WriteLine("here");
+                //Console.WriteLine("here");
             });
         }
 
@@ -87,6 +87,8 @@ namespace Recordings
             showOverlayHandle.Notify(MyColors.GREEN);
 
             Console.WriteLine("Play");
+            //Console.WriteLine(rec.Keyframes.Count);
+            //Console.WriteLine(rec.Keyframes.First.Value.ToString());
         }
 
         public void RecordBegin()
@@ -100,20 +102,8 @@ namespace Recordings
 
             Func<long> GetTimestamp = () => { return Time.Millis() - startT; };
 
-            bool diverted = false; // for not recording the stop rec gesture + esc
-
             recKey = (d, k) =>
             {
-                k = k == Key.None ? Key.Escape : k;
-                if (d)
-                {
-                    if (diverted) rec.Flush();
-                    if (k == Key.Escape)
-                    {
-                        rec.Divert();
-                        diverted = true;
-                    }
-                }
 
                 KeyActions ka;
                 switch (k)
@@ -175,6 +165,21 @@ namespace Recordings
 
             recKey = null;
             recMouse = null;
+
+            if(rec.Keyframes.Count > 0)
+            {
+                var last = rec.Keyframes.Last;
+                var sLast = last.Previous;
+
+                Console.WriteLine(last.Value.ToString());
+                Console.WriteLine(sLast.Value.ToString());
+                if (sLast.Value.ToString().Contains("Shift") &&
+                    last.Value.ToString().Contains("Escape"))
+                {
+                    rec.Keyframes.Remove(last);
+                    rec.Keyframes.Remove(sLast);
+                };
+            }
 
             newRecordingHandle.Notify(rec);
             //Console.WriteLine(rec.ToString());

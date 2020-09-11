@@ -19,7 +19,7 @@ namespace OutputSimulator
         public void DoAction(KeyActions ka, Key k)
         {
             if (k == Key.None) return;
-
+            //Console.WriteLine(k);
             VirtualKeyCode code = (VirtualKeyCode)KeyInterop.VirtualKeyFromKey(k);
             switch (ka)
             {

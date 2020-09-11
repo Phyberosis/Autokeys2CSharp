@@ -35,7 +35,7 @@
                     <TextBlock x:Name="txtInfo"
                                Style="{StaticResource keyframeBlock}" Text="{Binding Info}"
                                IsMouseDirectlyOverChanged="txtInfo_IsMouseDirectlyOverChanged"
-                               MouseDown="txtInfo_MouseDown" KeyDown="txtInfo_KeyDown"/>
+                               MouseDown="txtInfo_MouseDown"/>
                 </Border>
                 <Label Grid.Column="3" Style="{StaticResource separator}" Grid.RowSpan="2"/>
                 <Border x:Name="brdDesc" Grid.Column="4" Style="{StaticResource highlightBorder}" Grid.RowSpan="2">

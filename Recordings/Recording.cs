@@ -125,14 +125,19 @@ namespace Recordings
             private Action<KeyActions> updateKA;
             private Action<Key> updateKey;
 
+            private void init()
+            {
+                DoAction = (r) => { r.DoAction(ka, k); };
+            }
+
             internal KeyframeK(KeyActions ka, Key k, long timestamp, Recording parent) 
                 : base(timestamp, parent, KFType.KEY)
             {
                 this.k = k;
                 this.ka = ka;
-                DoAction = (r) => { r.DoAction(ka, k); };
                 //Info = k.ToString();
                 //Description = isDown ? "DOWN" : "UP";
+                init();
             }
 
             internal KeyframeK(string line, long t, Recording p)
@@ -148,7 +153,7 @@ namespace Recordings
 
                 this.k = k;
                 this.ka = ka;
-                DoAction = (r) => { r.DoAction(ka, k); };
+                init();
             }
 
             public void OnUpdateKA(Action<KeyActions> cb) { updateKA = cb; }
@@ -205,6 +210,7 @@ namespace Recordings
 
             private void init()
             {
+                DoAction = (r) => r.DoAction(this.ma, this.x, this.y);
                 actions = (MouseAction[])Enum.GetValues(typeof(MouseAction));
                 for (int i = 0; i < actions.Length; i++)
                 {
@@ -214,7 +220,6 @@ namespace Recordings
                         break;
                     }
                 }
-
             }
 
             internal KeyframeM(MouseAction a, int x, int y, long timestamp, Recording parent)
@@ -223,8 +228,6 @@ namespace Recordings
                 this.x = x;
                 this.y = y;
                 this.ma = a;
-
-                DoAction = (r) => r.DoAction(ma, x, y);
 
                 init();
             }
@@ -245,8 +248,6 @@ namespace Recordings
                 this.x = x;
                 this.y = y;
                 this.ma = ma;
-
-                DoAction = (r) => r.DoAction(ma, x, y);
 
                 init();
             }
@@ -277,6 +278,23 @@ namespace Recordings
                 y = yy;
 
                 updateLoc(x, y);
+
+                var mas = ma.ToString();
+                if (mas.EndsWith("DOWN"))
+                {
+                    //Console.WriteLine("1");
+                    var n = Parent.GetLinkedWithOffset(this, 1);
+                    if (n != null && n.Type == Type)
+                    {
+                        //Console.WriteLine("2");
+                        var nM = (KeyframeM)n;
+                        var nmas = nM.ma.ToString();
+                        if(mas.Substring(0, mas.Length-4).Equals(nmas.Replace("UP", "")))
+                        {
+                            nM.UpdateLocation(xx, yy);
+                        }
+                    }
+                }
             }
 
             public int[] GetLoc()
@@ -394,23 +412,26 @@ namespace Recordings
             }
         }
 
-        public Keyframe AddDefaultM(Keyframe after)
+        private bool lastDn = false;
+        public Keyframe MakeDefaultM(Keyframe after)
         {
-            return addDefaultDelegate(after, (time) =>
+            return MakeDefaultDelegate(after, (time) =>
             {
-               return new KeyframeM(MouseAction.WM_LBUTTONDOWN, 0, 0, time, this);
+                var ma = lastDn ? MouseAction.WM_LBUTTONUP : MouseAction.WM_LBUTTONDOWN;
+                lastDn = !lastDn;
+                return new KeyframeM(ma, 0, 0, time, this);
             });
         }
 
-        public Keyframe AddDefaultK(Keyframe after)
+        public Keyframe MakeDefaultK(Keyframe after)
         {
-            return addDefaultDelegate(after, (time) =>
+            return MakeDefaultDelegate(after, (time) =>
             {
                return new KeyframeK(KeyActions.PRESS, Key.X, time, this);
             });
         }
 
-        private Keyframe addDefaultDelegate(Keyframe after, Func<long, Keyframe> makeNew)
+        private Keyframe MakeDefaultDelegate(Keyframe after, Func<long, Keyframe> makeNew)
         {
             Keyframe kf;
             if (after == null)
@@ -463,6 +484,7 @@ namespace Recordings
             }
         }
 
+        // os == 0 is self
         public Keyframe GetLinkedWithOffset(Keyframe k, int os)
         {
             var node = Keyframes.GetNode(k);
@@ -573,7 +595,7 @@ namespace Recordings
                         {
                             playT = currT;
                         }
-
+                        //Console.WriteLine(k.ToString());
                         k.DoAction(r);
                         node = node.Next;
                     }

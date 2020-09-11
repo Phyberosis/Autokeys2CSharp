@@ -66,9 +66,9 @@ namespace InputHook
             });
         }
 
-        public void RemoveKeyHook(OnKeyDelegate onDown, OnKeyDelegate onUp)
+        public Task RemoveKeyHook(OnKeyDelegate onDown, OnKeyDelegate onUp)
         {
-            Task.Delay(0).ContinueWith((t) => {
+            return Task.Delay(0).ContinueWith((t) => {
                 lock (this)
                 {
                     onKeyDn.Remove(onDown);
@@ -86,9 +86,9 @@ namespace InputHook
             });
         }
 
-        public void RemoveMouseHook(OnMouseDelegate onMouse)
+        public Task RemoveMouseHook(OnMouseDelegate onMouse)
         {
-            Task.Delay(0).ContinueWith((t) =>
+            return Task.Delay(0).ContinueWith((t) =>
             {
                 lock (this)
                     this.onMouse.Remove(onMouse);
