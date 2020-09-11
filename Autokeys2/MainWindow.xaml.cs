@@ -133,8 +133,8 @@ namespace Autokeys2
                         WindowState = WindowState.Normal;
                         this.Activate();
 
-                        this.Topmost = false;
                         this.Topmost = true;
+                        this.Topmost = false;
                         Hook.I().RemoveKeyHook(onD, onU);
                         stopRecord = () => { };
                     };
